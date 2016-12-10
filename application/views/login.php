@@ -12,6 +12,9 @@
     <!-- Bootstrap -->
     <link href="resource/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
+    <!-- Custom CSS -->
+    <link href="resource/css/sb-admin-2.min.css" rel="stylesheet" type="text/css">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -24,72 +27,82 @@
     <script src="resource/artDialog/dist/dialog-min.js"></script>
 
 
-    <style>
-        body {
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: #eee;
-        }
-
-        .form-signin {
-            max-width: 330px;
-            padding: 15px;
-            margin: 0 auto;
-        }
-
-        .form-signin .form-signin-heading,
-        .form-signin {
-            margin-bottom: 10px;
-        }
-
-        .form-signin .form-control {
-            position: relative;
-            font-size: 16px;
-            height: auto;
-            padding: 10px;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-        }
-
-        .form-signin .form-control:focus {
-            z-index: 2;
-        }
-
-        .form-signin input[type="text"] {
-            margin-bottom: -1px;
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-
-        .form-signin input[type="password"] {
-            margin-bottom: 10px;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-
-        #info {
-            display: none;;
-        }
-
-        .form-signin-heading {
-            text-align: center;
-        }
-    </style>
+<!--    <style>-->
+<!--        body {-->
+<!--            padding-top: 40px;-->
+<!--            padding-bottom: 40px;-->
+<!--            background-color: #eee;-->
+<!--        }-->
+<!---->
+<!--        .form-signin {-->
+<!--            max-width: 330px;-->
+<!--            padding: 15px;-->
+<!--            margin: 0 auto;-->
+<!--        }-->
+<!---->
+<!--        .form-signin .form-signin-heading,-->
+<!--        .form-signin {-->
+<!--            margin-bottom: 10px;-->
+<!--        }-->
+<!---->
+<!--        .form-signin .form-control {-->
+<!--            position: relative;-->
+<!--            font-size: 16px;-->
+<!--            height: auto;-->
+<!--            padding: 10px;-->
+<!--            -webkit-box-sizing: border-box;-->
+<!--            -moz-box-sizing: border-box;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+<!---->
+<!--        .form-signin .form-control:focus {-->
+<!--            z-index: 2;-->
+<!--        }-->
+<!---->
+<!--        .form-signin input[type="text"] {-->
+<!--            margin-bottom: -1px;-->
+<!--            border-bottom-left-radius: 0;-->
+<!--            border-bottom-right-radius: 0;-->
+<!--        }-->
+<!---->
+<!--        .form-signin input[type="password"] {-->
+<!--            margin-bottom: 10px;-->
+<!--            border-top-left-radius: 0;-->
+<!--            border-top-right-radius: 0;-->
+<!--        }-->
+<!---->
+<!--        #info {-->
+<!--            display: none;;-->
+<!--        }-->
+<!---->
+<!--        .form-signin-heading {-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--    </style>-->
 </head>
 
 <body>
 
 <div class="container">
-
-    <div class="form-signin" role="form">
-        <h2 class="form-signin-heading">局端信息查询</h2>
-        <input type="text" class="form-control" id="user_name" name="user_name" placeholder="工&nbsp;号"><br>
-        <input type="password" class="form-control" id="password" name="password" placeholder="密&nbsp;码">
-        <button class="btn btn-lg btn-primary btn-block" id="login_btn" type="button">登录</button>
-        <div id="info"></div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="login-panel panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">请登录</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="user_name" name="user_name" placeholder="工&nbsp;号" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="密&nbsp;码">
+                    </div>
+                    <button class="btn btn-lg btn-primary btn-block" id="login_btn" type="button">登录</button>
+                    <div id="info"></div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
 
 </body>
