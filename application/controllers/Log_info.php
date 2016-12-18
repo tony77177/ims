@@ -1,65 +1,57 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
 /**
  * Created by PhpStorm.
  * User: TONY
- * Date: 2016-12-9
- * Time: 21:38
+ * Date: 2016-12-14
+ * Time: 17:56
  */
-class Manager extends CI_Controller{
-
-    private $per_page = 20; //每页显示数据条数
-    private $uri_segment = 2; //分页方法自动测定你 URI 的哪个部分包含页数
-
+class Log_info extends CI_Controller
+{
     function __construct()
     {
         parent::__construct();
         $this->admin_model->auth_check();
-        $this->load->library(array('common_class', 'pagination'));
-        $this->load->model('device_model');
+        $this->load->model('common_model');
+//        $this->load->library(array('common_class', 'pagination'));
+//        $this->load->model('device_model');
     }
 
-    //首页加载
+    //日志信息加载
     public function index()
     {
 //        $this->load->view('index');
         $offset = 0; //偏移量
         $where = "";
 
-        if ($this->input->get('per_page')) {
-            $offset = ((int)$this->input->get('per_page') - 1) * $this->per_page; //计算偏移量
-        }
+//        if ($this->input->get('per_page')) {
+//            $offset = ((int)$this->input->get('per_page') - 1) * $this->per_page; //计算偏移量
+//        }
 
-        $count = $this->device_model->get_list_total_num($where); //总条数
+//        $count = $this->device_model->get_list_total_num($where); //总条数
 
         //初始化分页数据
-        $config = $this->common_class->getPageConfigInfo('/manager/?', $count, $this->per_page, $this->uri_segment);
-        $this->pagination->initialize($config);
-        $data['pagination'] = $this->pagination->create_links();
+//        $config = $this->common_class->getPageConfigInfo('/manager/?', $count, $this->per_page, $this->uri_segment);
+//        $this->pagination->initialize($config);
+//        $data['pagination'] = $this->pagination->create_links();
 
-        $data['device_list'] = $this->device_model->get_list($offset, $this->per_page, $where);
-        $this->load->view('index',$data);
+
+//        $list_sql = "SELECT * FROM t_log $where ORDER BY log_datetime DESC LIMIT $offset,10";
+//        $data['log_info'] = $this->common_model->getDataList($list_sql, 'default');
+//        $data['log_list'] = $this->device_model->get_list($offset, $this->per_page, $where);
+        $this->load->view('log_info');
     }
 
-    //局列表首页
-    public function device_list()
+    public function get_log_info()
     {
-        $this->load->view('device_list');
-    }
-
-    //局端列表信息获取
-    public function get_device_info()
-    {
-
-        $list_sql = "SELECT * FROM t_deviceinfo";
+        $list_sql = "SELECT * FROM t_log";
         $search = $_GET['search']['value'];//获取前台传过来的过滤条件
         $search_sql = "";
         if (isset($search)) {
             //mysql CONCAT(str1,str2,…)
             //返回结果为连接参数产生的字符串。如有任何一个参数为NULL ，则返回值为 NULL。
-            $search_sql = " WHERE CONCAT(id,ip_addr,positional_info,update_time) LIKE '%" . $search . "%'";
+            $search_sql = " WHERE CONCAT(id,log_username,ip_addr,log_content,log_datetime) LIKE '%" . $search . "%'";
         }
 
 
@@ -69,7 +61,7 @@ class Manager extends CI_Controller{
         $recordsFiltered = 0;
         //表的总记录数 必要
         $recordsTotal = 0;
-        $total_num_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo";
+        $total_num_sql = "SELECT COUNT(*) AS num FROM t_log";
         $recordsTotal = $this->common_model->getTotalNum($total_num_sql, 'default');
         $recordsFiltered = count($this->common_model->getDataList($list_sql . $search_sql, 'default'));
 
@@ -85,13 +77,16 @@ class Manager extends CI_Controller{
                     $orderSql = " ORDER BY id " . $order_dir;
                     break;
                 case 1;
-                    $orderSql = " ORDER BY positional_info " . $order_dir;
+                    $orderSql = " ORDER BY log_username " . $order_dir;
                     break;
                 case 2;
                     $orderSql = " ORDER BY ip_addr " . $order_dir;
                     break;
                 case 3;
-                    $orderSql = " ORDER BY update_time " . $order_dir;
+                    $orderSql = " ORDER BY log_content " . $order_dir;
+                    break;
+                case 4;
+                    $orderSql = " ORDER BY log_datetime " . $order_dir;
                     break;
                 default;
                     $orderSql = '';
@@ -116,6 +111,7 @@ class Manager extends CI_Controller{
             "recordsFiltered" => intval($recordsFiltered),
             "data" => $data
         ), JSON_UNESCAPED_UNICODE));
-
     }
+
+
 }
