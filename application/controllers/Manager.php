@@ -17,30 +17,13 @@ class Manager extends CI_Controller{
     {
         parent::__construct();
         $this->admin_model->auth_check();
-        $this->load->library(array('common_class', 'pagination'));
-        $this->load->model('device_model');
+//        $this->load->model('device_model');
     }
 
     //首页加载
     public function index()
     {
-//        $this->load->view('index');
-        $offset = 0; //偏移量
-        $where = "";
-
-        if ($this->input->get('per_page')) {
-            $offset = ((int)$this->input->get('per_page') - 1) * $this->per_page; //计算偏移量
-        }
-
-        $count = $this->device_model->get_list_total_num($where); //总条数
-
-        //初始化分页数据
-        $config = $this->common_class->getPageConfigInfo('/manager/?', $count, $this->per_page, $this->uri_segment);
-        $this->pagination->initialize($config);
-        $data['pagination'] = $this->pagination->create_links();
-
-        $data['device_list'] = $this->device_model->get_list($offset, $this->per_page, $where);
-        $this->load->view('index',$data);
+        $this->load->view('index');
     }
 
     //局列表首页
@@ -56,7 +39,7 @@ class Manager extends CI_Controller{
         $list_sql = "SELECT * FROM t_deviceinfo";
         $search = $_GET['search']['value'];//获取前台传过来的过滤条件
         $search_sql = "";
-        if (isset($search)) {
+        if ($search !== '') {
             //mysql CONCAT(str1,str2,…)
             //返回结果为连接参数产生的字符串。如有任何一个参数为NULL ，则返回值为 NULL。
             $search_sql = " WHERE CONCAT(id,ip_addr,positional_info,update_time) LIKE '%" . $search . "%'";

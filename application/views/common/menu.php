@@ -26,10 +26,10 @@
                 <a href="#"><i class="fa fa-sitemap fa-fw"></i> 分类信息<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
-                        <a href="#">分公司信息</a>
+                        <a href="<?php echo site_url('static_info/branch_info')?>">分公司信息</a>
                     </li>
                     <li>
-                        <a href="#">分前端信息</a>
+                        <a href="<?php echo site_url('static_info/serverroom_info')?>">分前端信息</a>
                     </li>
                     <li>
                         <a href="#">小区信息</a>

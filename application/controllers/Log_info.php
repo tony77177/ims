@@ -43,12 +43,13 @@ class Log_info extends CI_Controller
         $this->load->view('log_info');
     }
 
+    //日志信息获取，根据对应搜索条件反应json格式结果
     public function get_log_info()
     {
         $list_sql = "SELECT * FROM t_log";
         $search = $_GET['search']['value'];//获取前台传过来的过滤条件
         $search_sql = "";
-        if (isset($search)) {
+        if ($search !== '') {
             //mysql CONCAT(str1,str2,…)
             //返回结果为连接参数产生的字符串。如有任何一个参数为NULL ，则返回值为 NULL。
             $search_sql = " WHERE CONCAT(id,log_username,ip_addr,log_content,log_datetime) LIKE '%" . $search . "%'";
