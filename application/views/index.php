@@ -19,7 +19,7 @@
                             <i class="fa fa-th-large fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge">212316</div>
+                            <div class="huge"><?php echo $dev_total_num; ?></div>
                             <div>局端总数</div>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                             <i class="fa fa-tasks fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge">12</div>
+                            <div class="huge"><?php echo $branches_total_num;?></div>
                             <div>分公司个数</div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                             <i class="fa fa-desktop fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge">124</div>
+                            <div class="huge"><?php echo $sr_total_num;?></div>
                             <div>分前端个数</div>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <i class="fa fa-institution fa-5x" ></i>
                         </div>
                         <div class="col-xs-9 text-right" >
-                            <div class="huge">13</div>
+                            <div class="huge"><?php echo $community_total_num;?></div>
                             <div>小区个数</div>
                         </div>
                     </div>

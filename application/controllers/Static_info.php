@@ -15,7 +15,7 @@ class Static_info extends CI_Controller
     {
         parent::__construct();
         $this->admin_model->auth_check();
-        $this->load->model('common_model');
+//        $this->load->model('common_model');
     }
 
     //分公司信息view加载

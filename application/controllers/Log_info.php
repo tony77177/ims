@@ -13,7 +13,7 @@ class Log_info extends CI_Controller
     {
         parent::__construct();
         $this->admin_model->auth_check();
-        $this->load->model('common_model');
+//        $this->load->model('common_model');
 //        $this->load->library(array('common_class', 'pagination'));
 //        $this->load->model('device_model');
     }

@@ -16,6 +16,34 @@
                 <div class="panel-heading">
                     局端信息列表
                 </div>
+
+                <div class="panel-body">
+                    <div class="col-sm-2">
+                        小区选择
+                        <select class="form-control input-sm" id="community_info">
+                            <option value="all">全部</option>
+                            <?php
+                            foreach ($community_info as $item) {
+                                echo "<option value=" . $item['id'] . ">" . $item['community_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+
+                    </div>
+                    <div class="col-sm-2">
+                        分前端选择
+                        <select class="form-control input-sm" id="sr_info">
+                            <option value="all">全部</option>
+                            <?php
+                            foreach ($sr_info as $item) {
+                                echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                </div>
+
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="table-responsive">
@@ -60,8 +88,20 @@
 
 <script>
 
+//    $.fn.dataTable.ext.search.push(
+//        function( settings, data, dataIndex ) {
+//            var sr_info = $('#sr_info').val();
+//            var community_info = $('#community_info').val();
+//            var age = parseFloat( data[0] ) || 0; // use data for the age column
+//            alert(sr_info);
+////            return true;
+//        }
+//    );
+
+
+
     $(document).ready(function () {
-        $("#device_list_info").DataTable({
+        var table = $("#device_list_info").DataTable({
 //            "paging":true,
             "pagingType": "full_numbers",
             "responsive": true,
@@ -72,10 +112,14 @@
 //            "order": [[4, "desc"]], //默认排序
             "ajax": { // 获取数据
                 "url": "<?php echo site_url('manager/get_device_info') ?>",
-                "dataType": "json" //返回来的数据形式
+                "dataType": "json", //返回来的数据形式,
+                data:function (d) {
+                    d.sr_info = $('#sr_info').val(),
+                    d.community_info = $('#community_info').val();
+                }
             },
             "columns": [ //定义列数据来源
-                {'title': "序号", 'data': "id"},
+//                {'title': "序号", 'data': "id"},
                 {'title': "局端安装地址", 'data': "positional_info"},
                 {'title': "局端IP地址", 'data': "ip_addr"},
                 {'title': "更新时间", 'data': "update_time"},
@@ -103,6 +147,16 @@
             }
 
         });//table end
+
+        /*
+        * 下拉列表搜索查询
+        * 具体解决参见：
+        * https://www.datatables.net/forums/discussion/30286/ajax-reload-is-not-sending-updated-params#Comment_81214
+        * */
+        $('#sr_info, #community_info').change(function () {
+            table.ajax.reload();
+        });
+
     });
 </script>
 
