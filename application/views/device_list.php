@@ -47,7 +47,7 @@
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="device_list_info">
+                        <table class="table table-striped table-bordered" id="device_list_info" width="100%">
                             <thead>
                             <tr>
                                 <!--                                <th>序号</th>-->

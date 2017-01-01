@@ -132,22 +132,35 @@ class Common_class {
     }
 
     /**
-     * @param string $server 服务器地址
-     * @param string $curlPost post数据，如：name=toy&age=22
-     * @return string 页面返回值
+     * CURL请求
+     * @param $_url     目标地址
+     * @param $_data    POST数据
+     * @return mixed
      */
-    public function post($server,$curlPost){
+    public function curl_request($_url, $_data){
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $server);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+
+        //伪造成魅族的UA
+        $user_agent = 'User-Agent,Mozilla/5.0 (Linux; Android 5.1; MZ-MX4 Build/LMY47I) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/45.0.2454.94 Mobile Safari/537.36';
+        curl_setopt($ch, CURLOPT_URL, $_url);
+
+        //伪造UA及客户端IP地址，防止被服务器端封IP   注：但是 REMOTE_ADDR 无法伪造，服务器仍然可以获取此地址
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:111.85.211.178', 'CLIENT-IP:111.85.211.178'));
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 80);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $curlPost);
+        //post数据
+        curl_setopt($ch, CURLOPT_POST, 1);
+        //post的变量
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($_data));
+
         $data = curl_exec($ch);
         curl_close($ch);
 
         return $data;
     }
+
+
 
     /**
      * 获取userdefine内容

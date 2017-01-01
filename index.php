@@ -55,6 +55,12 @@
  */
 	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
+/**
+ * 定义默认时区
+ */
+date_default_timezone_set ('Asia/Shanghai');
+
+
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING

@@ -19,14 +19,14 @@
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="log_list_info">
+                        <table class="table table-striped table-bordered" id="log_list_info" width="100%">
                             <thead>
                             <tr>
-<!--                                <th>序号</th>-->
-<!--                                <th>操作人</th>-->
-<!--                                <th>登录IP</th>-->
-<!--                                <th>内容</th>-->
-<!--                                <th>时间</th>-->
+                                <th width="10%">序号</th>
+                                <th width="20%">操作人</th>
+                                <th width="20%">登录IP</th>
+                                <th width="30%">操作内容</th>
+                                <th width="20%">操作时间</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -75,11 +75,11 @@
                 "dataType": "json" //返回来的数据形式
             },
             "columns": [ //定义列数据来源
-                {'title': "序号", 'data': "id"},
-                {'title': "操作人", 'data': "log_username"},
-                {'title': "登录IP", 'data': "ip_addr"},
-                {'title': "内容", 'data': "log_content"},
-                {'title': "时间", 'data': "log_datetime"}
+                {'data': "id"},
+                {'data': "log_username"},
+                {'data': "ip_addr"},
+                {'data': "log_content"},
+                {'data': "log_datetime"}
             ],
             "language": { // 定义语言
                 "sProcessing": "<img src='resource/images/loading.gif'/> &nbsp;&nbsp;数据加载中，请稍后...&nbsp;&nbsp;",

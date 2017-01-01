@@ -4,7 +4,7 @@
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">分前端信息</h1>
+                <h1 class="page-header">小区信息</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -14,10 +14,10 @@
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        分前端信息列表
+                        小区信息列表
                     </div>
                     <div class="panel-body">
-                        <button type="button" class="btn btn-primary" id="btn-add"><i class="fa fa-plus"></i> 添加分前端</button>
+                        <button type="button" class="btn btn-primary" id="btn-add"><i class="fa fa-plus"></i> 添加小区</button>
                     </div>
 
                     <!-- /.panel-heading -->
@@ -76,12 +76,12 @@
                 "serverSide": true,//开启服务器获取数据
 //            "order": [[4, "desc"]], //默认排序
                 "ajax": { // 获取数据
-                    "url": "<?php echo site_url('serverroom_info/get_serverroom_info') ?>",
+                    "url": "<?php echo site_url('community_info/get_community_info') ?>",
                     "dataType": "json" //返回来的数据形式
                 },
                 "columns": [ //定义列数据来源
                     {'title': "序号", 'data': "id"},
-                    {'title': "分前端名称", 'data': "sr_name"},
+                    {'title': "小区名称", 'data': "community_name"},
                     {'title': "更新时间", 'data': "update_time"}
                 ],
                 "language": { // 定义语言
@@ -109,18 +109,18 @@
             });//table end
         });
 
-        //添加分前端信息
+        //添加小区信息
         $("#btn-add").click(function () {
             var d = dialog({
-                title: '添加分前端',
+                title: '添加小区',
 //            quickClose: true,
-                content: '分前端名称：<input type="text" class="form-control" id="sr_name" placeholder="请输入分前端名称" autofocus>',
+                content: '小区名称：<input type="text" class="form-control" id="community_name" placeholder="请输入小区名称" autofocus>',
                 okValue: '添加',
                 ok: function () {
-                    var _sr_name = $.trim($('#sr_name').val());
-                    if (_sr_name.length == 0) {
+                    var _community_name = $.trim($('#community_name').val());
+                    if (_community_name.length == 0) {
                         var info = dialog({
-                            content: '分前端名称不能为空！'
+                            content: '小区名称不能为空！'
                         });
                         info.show();
                         setTimeout(function () {
@@ -136,9 +136,9 @@
                             quickClose: true
                         }).show();
                         $.ajax({
-                            url: "<?php echo site_url('serverroom_info/add_serverroom_info') ?>",
+                            url: "<?php echo site_url('community_info/add_community_info') ?>",
                             type: "POST",
-                            data: {_sr_name: _sr_name},
+                            data: {_community_name: _community_name},
                             dataType:"json",
                             success: function (msg) {
                                 if (msg.result) {
@@ -149,11 +149,11 @@
                                     setTimeout(function () {
                                         dialog.get('result_info').close();
                                         success_info.close().remove();
-                                        _table.ajax.reload();
                                     }, 1000);
+                                    _table.ajax.reload();
                                 } else {
                                     var err_msg = dialog({
-                                        content: '添加失败，请检查分前端是否已经存在！'
+                                        content: '添加失败，请检查小区是否已经存在！'
                                     });
                                     err_msg.show();
                                     setTimeout(function () {

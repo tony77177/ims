@@ -10,34 +10,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Manager extends CI_Controller{
 
-    private $per_page = 20; //每页显示数据条数
-    private $uri_segment = 2; //分页方法自动测定你 URI 的哪个部分包含页数
-
     function __construct()
     {
         parent::__construct();
         $this->admin_model->auth_check();
-//        $this->load->model('device_model');
     }
 
     //首页加载
     public function index()
     {
         //获取设备总数
-        $get_dev_num_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo";
-        $dev_total_num = $this->common_model->getTotalNum($get_dev_num_sql, 'default');
+        $dev_total_num = 0;
+        if (!isset($_SESSION['dev_total_num'])) {
+            $get_dev_num_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo";
+            $_SESSION['dev_total_num'] = $this->common_model->getTotalNum($get_dev_num_sql, 'default');
+        }
+        $dev_total_num = $_SESSION['dev_total_num'];
 
         //分公司个数
-        $get_branches_num_sql = "SELECT COUNT(*) AS num FROM t_branch";
-        $branches_total_num = $this->common_model->getTotalNum($get_branches_num_sql, 'default');
+        $branches_total_num = 0;
+        if (!isset($_SESSION['branches_total_num'])) {
+            $get_branches_num_sql = "SELECT COUNT(*) AS num FROM t_branch";
+            $_SESSION['branches_total_num'] = $this->common_model->getTotalNum($get_branches_num_sql, 'default');
+        }
+        $branches_total_num = $_SESSION['branches_total_num'];
+
 
         //分前端个数
-        $get_sr_num_sql = "SELECT COUNT(*) AS num FROM t_serverroom";
-        $sr_total_num = $this->common_model->getTotalNum($get_sr_num_sql, 'default');
+        $sr_total_num = 0;
+        if (!isset($_SESSION['sr_total_num'])) {
+            $get_sr_num_sql = "SELECT COUNT(*) AS num FROM t_serverroom";
+            $_SESSION['sr_total_num'] = $this->common_model->getTotalNum($get_sr_num_sql, 'default');
+        }
+        $sr_total_num = $_SESSION['sr_total_num'];
+
 
         //小区个数
-        $get_community_num_sql = "SELECT COUNT(*) AS num FROM t_community";
-        $community_total_num = $this->common_model->getTotalNum($get_community_num_sql, 'default');
+        $community_total_num = 0;
+        if (!isset($_SESSION['community_total_num'])) {
+            $get_community_num_sql = "SELECT COUNT(*) AS num FROM t_community";
+            $_SESSION['community_total_num'] = $this->common_model->getTotalNum($get_community_num_sql, 'default');
+        }
+        $community_total_num = $_SESSION['community_total_num'];
+
 
         //加载首页数量
         $data = array(

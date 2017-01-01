@@ -23,7 +23,7 @@
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="branch_list_info">
+                        <table class="table table-striped table-bordered" id="branch_list_info" width="100%">
                             <thead>
                             <tr>
                                 <!--                                <th>序号</th>-->
@@ -63,9 +63,7 @@
     <script type="text/javascript" src="resource/DataTables/media/js/dataTables.responsive.min.js"></script>
 
 
-    <!-- artDialog -->
-    <link href="resource/artDialog/css/ui-dialog.css" rel="stylesheet" type="text/css">
-    <script src="resource/artDialog/dist/dialog-min.js"></script>
+    
 
 <script>
 
@@ -82,7 +80,7 @@
             "serverSide": true,//开启服务器获取数据
 //            "order": [[4, "desc"]], //默认排序
             "ajax": { // 获取数据
-                "url": "<?php echo site_url('static_info/get_branch_info') ?>",
+                "url": "<?php echo site_url('branch_info/get_branch_info') ?>",
                 "dataType": "json" //返回来的数据形式
             },
             "columns": [ //定义列数据来源
@@ -134,8 +132,15 @@
                     }, 1500);
                     return false;
                 } else {
+                    //loading事件
+                    dialog({
+                        id: 'result_info',
+                        title: '添加中，请稍后...',
+                        width: 150,
+                        quickClose: true
+                    }).show();
                     $.ajax({
-                        url: "<?php echo site_url('static_info/add_branch_info') ?>",
+                        url: "<?php echo site_url('branch_info/add_branch_info') ?>",
                         type: "POST",
                         data: {_branch_name: _branch_name},
                         dataType:"json",
@@ -146,19 +151,17 @@
                                 });
                                 success_info.show();
                                 setTimeout(function () {
+                                    dialog.get('result_info').close();
                                     success_info.close().remove();
+                                    _table.ajax.reload();
                                 }, 1000);
-//                                sleep(2);
-                                _table.ajax.reload();
-//                                $("#login_btn").html("登录");
-//                                $("#login_btn").attr('disabled', false);
-//                                return false;
                             } else {
                                 var err_msg = dialog({
                                     content: '添加失败，请检查分公司是否已经存在！'
                                 });
                                 err_msg.show();
                                 setTimeout(function () {
+                                    dialog.get('result_info').close();
                                     err_msg.close().remove();
                                 }, 1500);
                                 return false;
@@ -170,6 +173,7 @@
                             });
                             d.show();
                             setTimeout(function () {
+                                dialog.get('result_info').close();
                                 d.close().remove();
                             }, 3000);
                         }
