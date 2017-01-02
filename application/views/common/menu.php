@@ -42,6 +42,9 @@
                 <a href="<?php echo site_url('log_info')?>"><i class="fa fa-dashboard fa-fw"></i> 操作日志</a>
             </li>
             <li>
+                <a href="javascript:" id="about_system"><i class="fa fa-files-o fa-fw"></i> 关于系统</a>
+            </li>
+            <li>
                 <a href="javascript:" id="logout_btn"><i class="fa fa-user fa-fw"></i> 退出系统</a>
             </li>
         </ul>
@@ -63,6 +66,18 @@
             },
             cancelValue: '取消',
             cancel: function () {
+            }
+        });
+        logout_modal.showModal();
+    });
+
+    //关于系统
+    $("#about_system").click(function () {
+        var logout_modal = dialog({
+            title: '关于系统',
+            content: '<blockquote><p>本系统主要是用于管理EOC局端信息，方便实时统计、查询及导出相关设备信息。<br>如果使用中有任何问题或者建议，可以随时联系我们处理：<br><em>赵昱<br>Tel：15285149403<br>Email：<a href="mailto:97212287@qq.com">97212287@qq.com</a> </em></p></blockquote>',
+            okValue: '确定',
+            ok: function () {
             }
         });
         logout_modal.showModal();

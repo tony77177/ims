@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <title>局端信息查询</title>
+    <title><?php echo $this->config->config['sys_name'];?></title>
     <base href="<?php echo base_url() ?>">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -41,7 +41,7 @@
         <div class="col-md-4 col-md-offset-4">
             <div class="login-panel panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">请登录</h3>
+                    <h3 class="panel-title" style="text-align: center"><?php echo $this->config->config['sys_name'];?></h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
