@@ -5,6 +5,7 @@
     <base href="<?php echo base_url() ?>">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="resource/images/favicon.ico" type="image/x-icon" />
 
     <!-- Jquery -->
     <script src="resource/js/jquery-1.10.2.min.js"></script>

@@ -20,10 +20,10 @@
                 </div>
 
                 <div class="panel-body">
-                    <button type="button" class="btn btn-primary" id="btn-checked"> 通过审核
-                    </button>&nbsp;&nbsp;
-<!--                    <button type="button" class="btn btn-danger" id="btn-unchecked"> 不通过审核-->
-<!--                    </button>-->
+                    <div class="col-sm-2">
+                        <button type="button" class="btn btn-primary" id="btn-checked"> 通过审核
+                        </button>
+                    </div>
                 </div>
 
                 <div class="panel-body">
@@ -37,7 +37,6 @@
                             }
                             ?>
                         </select>
-
                     </div>
                     <div class="col-sm-2">
                         分前端选择

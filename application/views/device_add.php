@@ -14,16 +14,52 @@
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        局端添加
+                        单一添加
                     </div>
                     <div class="panel-body">
-                        <button type="button" class="btn btn-primary" id="btn-add"><i class="fa fa-plus"></i> 单个局端添加
-                        </button>
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-primary" id="btn-add"><i class="fa fa-plus"></i> 单个添加局端
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        批量添加
                     </div>
 
-                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="col-sm-2">
+                            小区选择
+                            <select class="form-control input-sm" id="community_info">
+                                <option value="all">全部</option>
+                                <?php
+                                foreach ($community_info as $item) {
+                                    echo "<option value=" . $item['id'] . ">" . $item['community_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
 
-                    <!-- /.panel-body -->
+                        </div>
+                        <div class="col-sm-2">
+                            分前端选择
+                            <select class="form-control input-sm" id="sr_info">
+                                <option value="all">全部</option>
+                                <?php
+                                foreach ($sr_info as $item) {
+                                    echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-primary" id="btn-multi-add"><i class="fa fa-plus"></i> 批量添加局端
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <!-- /.panel -->
             </div>
@@ -105,7 +141,7 @@
                             },
                             dataType: "json",
                             success: function (msg) {
-                                if (msg.result) {
+                                if (msg.result==true) {
                                     var success_info = dialog({
                                         content: '添加成功！'
                                     });
@@ -116,7 +152,7 @@
                                 } else {
                                     dialog.get('result_info').close();
                                     var err_msg = dialog({
-                                        content: '添加失败，请检查局端是否已经存在！'
+                                        content: '添加失败，请检查局端IP是否已经存在！'
                                     });
                                     err_msg.show();
                                     setTimeout(function () {
@@ -151,6 +187,9 @@
             var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
             return reg.test(ip);
         }
+
+
+
     </script>
 
 <?php require_once('common/footer.php'); ?>

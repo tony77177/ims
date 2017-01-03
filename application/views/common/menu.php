@@ -14,7 +14,7 @@
                         <a href="<?php echo site_url('device_info/device_add_view')?>">局端添加</a>
                     </li>
                     <li>
-                        <a href="buttons.html">局端修改</a>
+                        <a href="#">局端修改</a>
                     </li>
                     <li>
                         <a href="<?php echo site_url('device_info/dev_unchecked_view')?>">局端审核</a>

@@ -45,22 +45,28 @@ class Device_info extends CI_Controller
         $_sr_info = $this->input->post('_sr_info', TRUE);//分前端ID
         $_device_mac = $this->input->post('_device_mac', TRUE);//局端MAC，可为空
 
-        //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
-        $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time) VALUES ";
-        $add_sql .="('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . date("Y-m-d H:i:s") . "')";
-        $result = $this->common_model->execQuery($add_sql, 'default');
+        //检测局端是否存在
+        $check_dev_is_exist_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE ip_addr='" . $_device_ip_addr . "'";
+        $check_result = $this->common_model->getTotalNum($check_dev_is_exist_sql, 'default');
+        if ($check_result > 0) {
+            echo json_encode(array(
+                "result" => 'false'
+            ), JSON_UNESCAPED_UNICODE);
+        } else {
+            //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
+            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time) VALUES ";
+            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . date("Y-m-d H:i:s") . "')";
+            $result = $this->common_model->execQuery($add_sql, 'default');
 
-        //如果添加成功，则记录log
-       if ($result) {
-            $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '添加局端：' . $_device_ip_addr); //记录登录日志
+            //如果添加成功，则记录log
+            if ($result) {
+                $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '添加局端：' . $_device_ip_addr); //记录登录日志
+            }
+            echo json_encode(array(
+                "result" => $result
+            ), JSON_UNESCAPED_UNICODE);
         }
-        echo json_encode(array(
-            "result" => $result
-        ), JSON_UNESCAPED_UNICODE);
     }
-
-
-
 
 
     //加载未审核局端列表
@@ -162,11 +168,9 @@ class Device_info extends CI_Controller
     //局端审核通过操作
     public function dev_checked_operation()
     {
-        $dev_id = $this->input->post('_dev_id', TRUE);
-        $dev_id = implode(',', $dev_id);//将数组转成字符串，利用 Mysql中WHERE IN 实现批量更新
+        $dev_id_arrary = $this->input->post('_dev_id', TRUE);
+        $dev_id = implode(',', $dev_id_arrary);//将数组转成字符串，利用 Mysql中WHERE IN 实现批量更新
 
-//        //审核标志：0不通过，
-//        $flag = $this->input->post('_flag', TRUE);
 
         //批量更新局端为已审核状态，同时添加审核人名称及审核时间
         $checked_sql = "UPDATE t_unchecked_dev SET flag=1,checked_user='" . $_SESSION['admin_info'] . " " . $_SESSION['name'] . "',checked_date='" . date("Y-m-d H:i:s") . "' WHERE id IN (" . $dev_id . ")";
@@ -174,7 +178,28 @@ class Device_info extends CI_Controller
 
         if ($result) {
             $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '审核局端'); //记录登录日志
-            /////准备添加数据到t_device正式表
+            //准备添加数据到t_device正式表
+            log_message('info','开始执行批量审核机制');
+
+            $insert_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time)";
+            $insert_sql .= " VALUES ";
+
+            //此处采用获取ID之后再读取数据库的方法，暂时不采用前台传数据方法，为了防止数据不被篡改
+            for ($i = 0; $i < count($dev_id_arrary); $i++) {
+                $get_dev_info_by_id = "SELECT * FROM t_unchecked_dev WHERE id='" . $dev_id_arrary[$i] . "'";
+                $data = $this->common_model->getDataList($get_dev_info_by_id, 'default');
+                $data = $data[0];
+                if ($i + 1 == count($dev_id_arrary)) {
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "')";
+                } else {
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "'),";
+                }
+            }
+
+            log_message('info', '批量审核SQL：' . $insert_sql);
+            $insert_result = $this->common_model->execQuery($insert_sql, 'default');
+            log_message('info', '批量审核SQL执行结果：' . $insert_result);
+
         }
 
         echo json_encode(array(
