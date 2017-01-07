@@ -17,6 +17,7 @@ class Device_info extends CI_Controller
     {
         parent::__construct();
         $this->admin_model->auth_check();
+        $this->load->library('excel');
     }
 
 
@@ -314,5 +315,106 @@ class Device_info extends CI_Controller
             "data" => $data
         ), JSON_UNESCAPED_UNICODE));
     }
+
+    /**
+     * 批量添加局端信息
+     * 处理逻辑：
+     * 1、前台同时上传文件信息和数据信息（both data and file）
+     * 2、首先保存上传的excel文件信息
+     * 3、其次利用PHPEXCEL开始读取局端信息
+     *  3.1 中途每个步骤核实对应的信息，如IP地址合法性检查，如果非法的则不添加进DB
+     * 4、添加成功后返回添加成功条数信息及失败条数信息
+     */
+    public function add_multi_dev()
+    {
+        //获取上传文件后缀类型
+        $file_array = explode(".", $_FILES['file']['name']);
+        $file_extension = strtolower(array_pop($file_array));
+
+        if ($file_extension != 'xls' && $file_extension != 'xlsx') {
+            echo(json_encode(
+                array(
+                    "result" => "file_error"
+                ), JSON_UNESCAPED_UNICODE
+            ));
+        } else {
+            //文件保存后的新名字及保存目录
+            $file_new_Name = $this->config->config['upload_path'] . $_SESSION['admin_info'] . '-' . time() . '.' . $file_extension;
+            //保存文件，保存成功返回 TRUE 否则返回FALSE
+            $flag = move_uploaded_file($_FILES['file']['tmp_name'], $file_new_Name);
+            log_message('info', 'excel文件新名字：' . $file_new_Name);
+            log_message('info', 'excel文件是否保存成功标志：' . $flag);
+            if ($flag) {
+                //文件保存成功，开始读文件
+                $objPHPExcel = PHPExcel_IOFactory::load($file_new_Name);
+                $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+                foreach ($cell_collection as $cell) {
+                    $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+                    $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+                    //获取具体值此处使用：getFormattedValue，因为部分excel中包含格式，所以包含格式一起读取
+                    $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getFormattedValue();
+                    //header will/should be in row 1 only. of course this can be modified to suit your need.
+                    if ($row == 1) {
+                        $header[$row][$column] = $data_value;
+                    } else {
+                        $arr_data[$row][$column] = $data_value;
+                    }
+                }
+                //send the data in an array format
+                $data['header'] = $header;
+                $data['values'] = $arr_data;
+
+                $_community_info = $this->input->post('community_info', TRUE);//小区ID
+                $_sr_info = $this->input->post('sr_info', TRUE);//分前端ID
+
+                $success_num = 0;//添加成功具体数量
+                $fail_num = 0;//添加失败具体数量
+                foreach ($arr_data as $item) {
+                    //检测局端是否存在
+                    $check_dev_is_exist_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE ip_addr='" . $item['A'] . "'";
+                    $check_result = $this->common_model->getTotalNum($check_dev_is_exist_sql, 'default');
+                    if ($check_result == 0) {
+                        //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
+                        $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time) VALUES ";
+                        $add_sql .= "('" . $item['A'] . "','" . $item['B'] . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $item['C'] . "','" . date("Y-m-d H:i:s") . "')";
+                        $result = $this->common_model->execQuery($add_sql, 'default');
+
+                        //如果添加成功，则记录log
+                        if ($result) {
+                            $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '添加局端：' . $item['A']); //记录登录日志
+                        }
+                        $success_num++;
+                    } else {
+                        $fail_num++;
+                    }
+                }
+
+                if ($success_num == 0) {
+                    echo(json_encode(
+                        array(
+                            "result" => "fail"
+                        ), JSON_UNESCAPED_UNICODE
+                    ));
+                } else {
+                    echo(json_encode(
+                        array(
+                            "result" => "success",
+                            "success_num" => $success_num,
+                            "fail_num" => $fail_num
+                        ), JSON_UNESCAPED_UNICODE
+                    ));
+                }
+            } else {
+                log_message('info', '上传文件保存失败：' . $file_new_Name);
+                echo(json_encode(
+                    array(
+                        "result" => "fail"
+                    ), JSON_UNESCAPED_UNICODE
+                ));
+            }
+        }
+    }
+
+
 
 }

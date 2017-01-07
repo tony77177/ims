@@ -53,11 +53,34 @@
                                 ?>
                             </select>
                         </div>
+                        <!--                        <div class="form-group">-->
+                        <!--                        </div>-->
+
+                        <div class="col-sm-2">
+                            <br>
+                            <input id="file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+<!--                            <input class="input-text" type="hidden" id="file_flag" value="0"/>-->
+<!--                            <button id="upload" class="btn btn-primary" type="button"><i-->
+<!--                                    class="glyphicon glyphicon-upload"></i>上传设备文件-->
+<!--                            </button>-->
+                            <!--                            <input id="lefile" type="file" style="display:none">-->
+                            <!--                            <input type="text" class="form-control" id="dev_multi_data" disabled>-->
+                            <!--<!--                            <input id="photoCover" class="input-large" type="text" style="height:30px;">-->
+
+                            <!--                            <button class="btn" onclick="$('input[id=lefile]').click();" id="choose_file_btn">选择上传文件</button>-->
+                        </div>
                     </div>
+
+
                     <div class="panel-body">
                         <div class="col-sm-2">
-                            <button type="button" class="btn btn-primary" id="btn-multi-add"><i class="fa fa-plus"></i> 批量添加局端
+                            <button type="button" class="btn btn-primary" id="btn-multi-add"><i class="fa fa-plus"></i>
+                                批量添加局端
                             </button>
+                        </div>
+                        <div style="color: red;">
+                            <br>
+                            <b>注：批量添加设备过程较慢，添加途中请勿关闭或者刷新浏览器，请等待系统自动运行结束后再操作。</b>
                         </div>
                     </div>
                 </div>
@@ -68,9 +91,165 @@
         </div>
         <!-- /.row -->
     </div>
-    <!-- /#page-wrapper -->
+
 
     <script>
+
+        $("#upload").click(function () {
+
+        });
+
+        //        $("#choose_file_btn").click(function () {
+        //            var btnUpload = $("#choose_file_btn");
+        //            var file_name = $("#lefile").val();
+        //            $("#video_status").attr('value', file_name);
+        //            new AjaxUpload(btnUpload, {
+        //                action: '#',
+        //                name: 'lefile',
+        ////                        data: {
+        ////                            file_type: 0, //上传文件类型
+        ////                            up_type: 'emoji',
+        ////                            order_id: 0, //地址序号
+        ////                            up_act: 'add'
+        ////                        },
+        //                onSubmit: function(file, ext) {//ext file suffix
+        //
+        //                    if (!(ext && /^(mp4)$/.test(ext))) {
+        //                        alert('请上传MP4格式视频文件！');
+        //                        return false;
+        //                    }
+        //
+        ////                        warn.html('正在上传...');
+        //                    //loading事件
+        //                    dialog({
+        //                        id: 'file_upload',
+        //                        title: '添加中，请稍后...',
+        //                        width: 150,
+        //                        quickClose: true
+        //                    }).show();
+        //                },
+        //                onComplete: function(file, response) {
+        //                    dialog.get('file_upload').close();
+        //                    if (response != "error" && response != "") {
+        ////                        warn.html('上传成功！');
+        //                        $("#video_status").html(response);
+        //                        $("#video_status").attr('value', response);
+        //                    } else {
+        //                        alert('上传失败，请重新上传！');
+        //                    }
+        //
+        //                }
+        //            });
+        //        });
+
+        //        $('input[id=lefile]').change(function() {
+        //            $('#dev_multi_data').val($(this).val());
+        //        });
+
+        $("#btn-multi-add").click(function () {
+            var community_info = $("#community_info").val();
+            var sr_info = $("#sr_info").val();
+            if (community_info == 'all' || sr_info == 'all') {
+                var d = dialog({
+                    content: '请选择所属小区及分前端！'
+                });
+                d.show();
+                setTimeout(function () {
+                    d.close().remove();
+                }, 1500);
+                return;
+            }
+//            var file_flag = $("#file_flag").attr('value');
+//            if (file_flag == 0) {
+//                var d = dialog({
+//                    content: '请先上传设备文件！'
+//                });
+//                d.show();
+//                setTimeout(function () {
+//                    d.close().remove();
+//                }, 1500);
+//                return;
+//            }
+
+            //uploading both data and file in one form using Ajax
+            //resolution: http://stackoverflow.com/questions/21060247/send-formdata-and-string-data-together-through-jquery-ajax
+            var formData = new FormData();
+            formData.append('file', $('#file')[0].files[0]);
+            formData.append('community_info', community_info);
+            formData.append('sr_info', sr_info);
+            if ($('#file').val() == '') {
+                var info = dialog({
+                    content: '请选择需要添加的文件'
+                });
+                info.show();
+                setTimeout(function () {
+                    info.close().remove();
+                }, 1500);
+                return false;
+            }
+            //loading事件
+            dialog({
+                id: 'result_info',
+                title: '设备批量添加中，请稍后...',
+                width: 'auto',
+                quickClose: true
+            }).show();
+            $.ajax({
+                url: '<?php echo site_url('device_info/add_multi_dev') ?>',
+                type: 'POST',
+                cache: false,
+                data: formData,
+                processData: false,
+                contentType: false
+            }).done(function (res) {
+                var res = jQuery.parseJSON(res);//解析JSON
+//                alert(res.result);
+                if (res.result == 'file_error') {
+                    var info = dialog({
+                        content: '上传文件类型错误，只能上传excel文件'
+                    });
+                    info.show();
+                    setTimeout(function () {
+                        dialog.get('result_info').close();
+                        info.close().remove();
+                    }, 1500);
+                    return false;
+                } else if (res.result == 'fail') {
+                    var info = dialog({
+                        content: '添加失败，请稍后再试'
+                    });
+                    info.show();
+                    setTimeout(function () {
+                        dialog.get('result_info').close();
+                        info.close().remove();
+                    }, 1500);
+                    return false;
+                } else {
+                    $("#btn-multi-add").html("添加成功");
+                    $("#btn-multi-add").attr('disabled', true);
+                    var info = dialog({
+                        content: '添加成功<br>添加成功局端数：'+res.success_num+'<br>添加失败局端数：'+res.fail_num
+                    });
+                    info.show();
+                    setTimeout(function () {
+                        dialog.get('result_info').close();
+//                        info.close().remove();
+                    }, 1000);
+                    return false;
+                }
+            }).fail(function (res) {
+                var info = dialog({
+                    content: '上传失败，请稍后再试'
+                });
+                info.show();
+                setTimeout(function () {
+                    dialog.get('result_info').close();
+                    info.close().remove();
+                }, 1500);
+                return false;
+            });
+
+        });
 
         //添加局端信息
         $("#btn-add").click(function () {
@@ -141,7 +320,7 @@
                             },
                             dataType: "json",
                             success: function (msg) {
-                                if (msg.result==true) {
+                                if (msg.result == true) {
                                     var success_info = dialog({
                                         content: '添加成功！'
                                     });
@@ -187,7 +366,6 @@
             var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
             return reg.test(ip);
         }
-
 
 
     </script>
