@@ -2,44 +2,50 @@
     <div class="sidebar-nav navbar-collapse">
         <ul class="nav" id="side-menu">
             <li>
-                <a href="<?php echo site_url('manager')?>"><i class="fa fa-dashboard fa-fw"></i> 主页概况</a>
+                <a href="<?php echo site_url('manager') ?>"><i class="fa fa-dashboard fa-fw"></i> 主页概况</a>
             </li>
             <li>
-                <a href="<?php echo site_url('manager/device_list')?>"><i class="fa fa-table fa-fw"></i> 局端列表</a>
+                <a href="<?php echo site_url('manager/device_list') ?>"><i class="fa fa-table fa-fw"></i> 局端列表</a>
             </li>
+            <?php
+            if ($_SESSION['is_manager']) {
+                ?>
+                <li>
+                    <a href="#"><i class="fa fa-wrench fa-fw"></i> 局端管理<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="<?php echo site_url('device_info/device_add_view') ?>">局端添加</a>
+                        </li>
+                        <li>
+                            <a href="<?php echo site_url('device_info/dev_edit_view') ?>">局端修改</a>
+                        </li>
+                        <li>
+                            <a href="<?php echo site_url('device_info/dev_unchecked_view') ?>">局端审核</a>
+                        </li>
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> 分类信息<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="<?php echo site_url('branch_info') ?>">分公司信息</a>
+                        </li>
+                        <li>
+                            <a href="<?php echo site_url('serverroom_info') ?>">分前端信息</a>
+                        </li>
+                        <li>
+                            <a href="<?php echo site_url('community_info') ?>">小区信息</a>
+                            <!-- /.nav-third-level -->
+                        </li>
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>
+                <?php
+            }
+            ?>
             <li>
-                <a href="#"><i class="fa fa-wrench fa-fw"></i> 局端管理<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="<?php echo site_url('device_info/device_add_view')?>">局端添加</a>
-                    </li>
-                    <li>
-                        <a href="#">局端修改</a>
-                    </li>
-                    <li>
-                        <a href="<?php echo site_url('device_info/dev_unchecked_view')?>">局端审核</a>
-                    </li>
-                </ul>
-                <!-- /.nav-second-level -->
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-sitemap fa-fw"></i> 分类信息<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="<?php echo site_url('branch_info')?>">分公司信息</a>
-                    </li>
-                    <li>
-                        <a href="<?php echo site_url('serverroom_info')?>">分前端信息</a>
-                    </li>
-                    <li>
-                        <a href="<?php echo site_url('community_info')?>">小区信息</a>
-                        <!-- /.nav-third-level -->
-                    </li>
-                </ul>
-                <!-- /.nav-second-level -->
-            </li>
-            <li>
-                <a href="<?php echo site_url('log_info')?>"><i class="fa fa-dashboard fa-fw"></i> 操作日志</a>
+                <a href="<?php echo site_url('log_info') ?>"><i class="fa fa-dashboard fa-fw"></i> 操作日志</a>
             </li>
             <li>
                 <a href="javascript:" id="about_system"><i class="fa fa-files-o fa-fw"></i> 关于系统</a>
@@ -62,7 +68,7 @@
             content: '确定要退出系统吗？',
             okValue: '确定',
             ok: function () {
-                window.location.href='<?php echo site_url('login/logout')?>';
+                window.location.href = '<?php echo site_url('login/logout')?>';
             },
             cancelValue: '取消',
             cancel: function () {

@@ -160,4 +160,45 @@ class Manager extends CI_Controller{
             "data" => $data
         ), JSON_UNESCAPED_UNICODE));
     }
+
+    /**
+     * 添加局端信息：
+     *  此处仅仅添加到待审核局端表，需要管理员审核通过后才添加到正式表
+     */
+    public function add_uncheck_dev()
+    {
+        //暂时只过滤XSS情况，后续再增加防止SQL过滤等函数过滤
+        $_device_ip_addr = trim($this->input->post('_device_ip_addr', TRUE));//局端IP
+        $_device_positional_info = trim($this->input->post('_device_positional_info', TRUE));//局端安装地址
+        $_community_info = $this->input->post('_community_info', TRUE);//小区ID
+        $_sr_info = $this->input->post('_sr_info', TRUE);//分前端ID
+        $_device_mac = $this->input->post('_device_mac', TRUE);//局端MAC，可为空
+
+
+        //检测局端是否存在
+        $check_dev_is_exist_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE ip_addr='" . $_device_ip_addr . "'";
+        $check_result = $this->common_model->getTotalNum($check_dev_is_exist_sql, 'default');
+        if ($check_result > 0) {
+            echo json_encode(array(
+                "result" => 'false'
+            ), JSON_UNESCAPED_UNICODE);
+        } else {
+
+            log_message('info', '添加待审核局端：' . $_SESSION['admin_info'] . '  ' . $_SESSION['name'] . ',IP地址：' . $_device_ip_addr);
+            //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
+            $add_sql = "INSERT INTO t_unchecked_dev(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_user,add_time,flag) VALUES ";
+            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . $_SESSION['admin_info'] . '  ' . $_SESSION['name'] . "','" . date("Y-m-d H:i:s") . "','0')";
+            $result = $this->common_model->execQuery($add_sql, 'default');
+            log_message('info', '添加待审核局端SQL：' . $add_sql);
+            log_message('info', '添加待审核局端结果：' . $result);
+
+            //如果添加成功，则记录log
+            if ($result) {
+                $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '待审核局端添加：' . $_device_ip_addr); //记录登录日志
+            }
+            echo json_encode(array(
+                "result" => $result
+            ), JSON_UNESCAPED_UNICODE);
+        }
+    }
 }

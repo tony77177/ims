@@ -17,11 +17,10 @@ class Admin_Model extends CI_Model {
     /**
      * 登录验证
      * @param $_username    用户名
-     * @param $_pwd         密码
      * @return mixed        返回条数
      */
-    function check_login($_username, $_pwd){
-        $check_sql = "SELECT COUNT(*) AS num FROM t_admin WHERE user_name='" . $_username . "' AND pass_word='" . $_pwd . "'";
+    function check_login($_username){
+        $check_sql = "SELECT COUNT(*) AS num FROM t_admin WHERE user_name='" . $_username . "'";
         $num = $this->common_model->getTotalNum($check_sql, 'default');
         return $num;
     }
@@ -32,6 +31,15 @@ class Admin_Model extends CI_Model {
     function auth_check(){
         if (!$this->session->userdata('admin_info')) {
             redirect(site_url() . "/login");
+        }
+    }
+
+    /**
+     * 验证是否为管理员
+     */
+    function check_is_manager(){
+        if(!$_SESSION['is_manager']){
+            redirect(site_url() . "/manager/device_list");
         }
     }
 

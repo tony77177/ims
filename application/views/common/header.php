@@ -27,9 +27,6 @@
     <!-- Custom Fonts -->
     <link href="resource/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- DataTables -->
-<!--    <link href="resource/DataTables/media/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">-->
-<!--    <link href="resource/DataTables/media/css/dataTables.responsive.css" rel="stylesheet" type="text/css">-->
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -60,6 +57,7 @@
     <!-- artDialog -->
     <link href="resource/artDialog/css/ui-dialog.css" rel="stylesheet" type="text/css">
     <script src="resource/artDialog/dist/dialog-min.js"></script>
+
 
 </head>
 

@@ -150,10 +150,10 @@
                                     content: '添加成功！'
                                 });
                                 success_info.show();
+                                dialog.get('result_info').close();
                                 setTimeout(function () {
-                                    dialog.get('result_info').close();
                                     success_info.close().remove();
-                                    _table.ajax.reload();
+                                    $("#branch_list_info").dataTable().fnDraw(false);//静态刷新，保留在当前页面
                                 }, 1000);
                             } else {
                                 var err_msg = dialog({

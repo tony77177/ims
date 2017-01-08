@@ -17,6 +17,7 @@ class Device_info extends CI_Controller
     {
         parent::__construct();
         $this->admin_model->auth_check();
+        $this->admin_model->check_is_manager();
         $this->load->library('excel');
     }
 
@@ -55,8 +56,8 @@ class Device_info extends CI_Controller
             ), JSON_UNESCAPED_UNICODE);
         } else {
             //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
-            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time) VALUES ";
-            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . date("Y-m-d H:i:s") . "')";
+            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_time,update_time) VALUES ";
+            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
             $result = $this->common_model->execQuery($add_sql, 'default');
 
             //如果添加成功，则记录log
@@ -182,7 +183,7 @@ class Device_info extends CI_Controller
             //准备添加数据到t_device正式表
             log_message('info','开始执行批量审核机制');
 
-            $insert_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time)";
+            $insert_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_time,update_time)";
             $insert_sql .= " VALUES ";
 
             //此处采用获取ID之后再读取数据库的方法，暂时不采用前台传数据方法，为了防止数据不被篡改
@@ -191,9 +192,9 @@ class Device_info extends CI_Controller
                 $data = $this->common_model->getDataList($get_dev_info_by_id, 'default');
                 $data = $data[0];
                 if ($i + 1 == count($dev_id_arrary)) {
-                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "')";
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "'),'" . date("Y-m-d H:i:s") . "')";
                 } else {
-                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "'),";
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "'),'" . date("Y-m-d H:i:s") . "'),";
                 }
             }
 
@@ -352,7 +353,7 @@ class Device_info extends CI_Controller
                     $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
                     $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
                     //获取具体值此处使用：getFormattedValue，因为部分excel中包含格式，所以包含格式一起读取
-                    $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getFormattedValue();
+                    $data_value = trim($objPHPExcel->getActiveSheet()->getCell($cell)->getFormattedValue());
                     //header will/should be in row 1 only. of course this can be modified to suit your need.
                     if ($row == 1) {
                         $header[$row][$column] = $data_value;
@@ -361,8 +362,8 @@ class Device_info extends CI_Controller
                     }
                 }
                 //send the data in an array format
-                $data['header'] = $header;
-                $data['values'] = $arr_data;
+//                $data['header'] = $header;
+//                $data['values'] = $arr_data;
 
                 $_community_info = $this->input->post('community_info', TRUE);//小区ID
                 $_sr_info = $this->input->post('sr_info', TRUE);//分前端ID
@@ -370,21 +371,28 @@ class Device_info extends CI_Controller
                 $success_num = 0;//添加成功具体数量
                 $fail_num = 0;//添加失败具体数量
                 foreach ($arr_data as $item) {
-                    //检测局端是否存在
-                    $check_dev_is_exist_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE ip_addr='" . $item['A'] . "'";
-                    $check_result = $this->common_model->getTotalNum($check_dev_is_exist_sql, 'default');
-                    if ($check_result == 0) {
-                        //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
-                        $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,update_time) VALUES ";
-                        $add_sql .= "('" . $item['A'] . "','" . $item['B'] . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $item['C'] . "','" . date("Y-m-d H:i:s") . "')";
-                        $result = $this->common_model->execQuery($add_sql, 'default');
+                    //判断IP地址是否合法，PHP 5 >= 5.2.0, 支持该函数
+                    if (filter_var($item['A'], FILTER_VALIDATE_IP)) {
+                        //检测局端是否存在
+                        $check_dev_is_exist_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE ip_addr='" . $item['A'] . "'";
+                        $check_result = $this->common_model->getTotalNum($check_dev_is_exist_sql, 'default');
+                        if ($check_result == 0) {
+                            //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
+                            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_time,update_time) VALUES ";
+                            $add_sql .= "('" . $item['A'] . "','" . $item['B'] . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $item['C'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
+                            $result = $this->common_model->execQuery($add_sql, 'default');
 
-                        //如果添加成功，则记录log
-                        if ($result) {
-                            $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '添加局端：' . $item['A']); //记录登录日志
+                            //如果添加成功，则记录log
+                            if ($result) {
+                                $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '添加局端：' . $item['A']); //记录登录日志
+                            }
+                            $success_num++;
+                        } else {
+                            log_message('info', '批量添加失败局端IP：' . $item['A']);
+                            $fail_num++;
                         }
-                        $success_num++;
                     } else {
+                        log_message('info', '批量添加失败局端IP：' . $item['A']);
                         $fail_num++;
                     }
                 }
@@ -415,6 +423,42 @@ class Device_info extends CI_Controller
         }
     }
 
+    //加载待编辑局端信息列表
+    public function dev_edit_view()
+    {
+        //小区信息获取
+        $get_community_info_sql = "SELECT id,community_name FROM t_community";
+        $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
 
+        //分前端信息获取
+        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+
+        $this->load->view('device_edit', $data);
+    }
+
+    //局端信息修改
+    public function dev_edit_operation()
+    {
+        //设备ID、安装地址及设备IP获取，暂时只支持修改设备安装地址
+        $_dev_id = $this->input->post("_dev_id", TRUE);
+        $_device_positional_info = $this->input->post("_device_positional_info", TRUE);
+        $_ip_addr = $this->input->post("_ip_addr", TRUE);
+
+        //局端信息修改DB操作
+        $update_sql = "UPDATE t_deviceinfo SET positional_info='" . $_device_positional_info . "',update_time='" . date("Y-m-d H:i:s") . "'";
+        $update_sql .= " WHERE id='" . $_dev_id . "' AND ip_addr='" . $_ip_addr . "'";
+        log_message('info', '局端信息修改SQL：' . $update_sql);
+        $result = $this->common_model->execQuery($update_sql, 'default');
+        log_message('info', '局端信息修改结果：' . $result);
+
+        //如果添加成功，则记录log
+        if ($result) {
+            $this->admin_model->add_log($this->input->ip_address(), $_SESSION['admin_info'] . '  ' . $_SESSION['name'], '更新局端：' . $_ip_addr); //记录登录日志
+        }
+        echo json_encode(array(
+            "result" => $result
+        ), JSON_UNESCAPED_UNICODE);
+    }
 
 }

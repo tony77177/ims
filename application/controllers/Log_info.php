@@ -13,33 +13,11 @@ class Log_info extends CI_Controller
     {
         parent::__construct();
         $this->admin_model->auth_check();
-//        $this->load->model('common_model');
-//        $this->load->library(array('common_class', 'pagination'));
-//        $this->load->model('device_model');
     }
 
     //日志信息加载
     public function index()
     {
-//        $this->load->view('index');
-        $offset = 0; //偏移量
-        $where = "";
-
-//        if ($this->input->get('per_page')) {
-//            $offset = ((int)$this->input->get('per_page') - 1) * $this->per_page; //计算偏移量
-//        }
-
-//        $count = $this->device_model->get_list_total_num($where); //总条数
-
-        //初始化分页数据
-//        $config = $this->common_class->getPageConfigInfo('/manager/?', $count, $this->per_page, $this->uri_segment);
-//        $this->pagination->initialize($config);
-//        $data['pagination'] = $this->pagination->create_links();
-
-
-//        $list_sql = "SELECT * FROM t_log $where ORDER BY log_datetime DESC LIMIT $offset,10";
-//        $data['log_info'] = $this->common_model->getDataList($list_sql, 'default');
-//        $data['log_list'] = $this->device_model->get_list($offset, $this->per_page, $where);
         $this->load->view('log_info');
     }
 
@@ -113,6 +91,5 @@ class Log_info extends CI_Controller
             "data" => $data
         ), JSON_UNESCAPED_UNICODE));
     }
-
-
+    
 }

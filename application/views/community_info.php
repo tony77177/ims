@@ -1,5 +1,5 @@
-<?php require_once('common/header.php');?>
-<?php require_once('common/menu.php');?>
+<?php require_once('common/header.php'); ?>
+<?php require_once('common/menu.php'); ?>
 
     <div id="page-wrapper">
         <div class="row">
@@ -17,7 +17,8 @@
                         小区信息列表
                     </div>
                     <div class="panel-body">
-                        <button type="button" class="btn btn-primary" id="btn-add"><i class="fa fa-plus"></i> 添加小区</button>
+                        <button type="button" class="btn btn-primary" id="btn-add"><i class="fa fa-plus"></i> 添加小区
+                        </button>
                     </div>
 
                     <!-- /.panel-heading -->
@@ -65,9 +66,8 @@
 
     <script>
 
-        var _table;
         $(document).ready(function () {
-            _table = $("#sr_list_info").DataTable({
+            var _table = $("#sr_list_info").DataTable({
                 "pagingType": "full_numbers",
                 "responsive": true,
                 //"lengthMenu":[5,10,25,50],
@@ -139,25 +139,25 @@
                             url: "<?php echo site_url('community_info/add_community_info') ?>",
                             type: "POST",
                             data: {_community_name: _community_name},
-                            dataType:"json",
+                            dataType: "json",
                             success: function (msg) {
                                 if (msg.result) {
                                     var success_info = dialog({
                                         content: '添加成功！'
                                     });
                                     success_info.show();
+                                    dialog.get('result_info').close();
                                     setTimeout(function () {
-                                        dialog.get('result_info').close();
+                                        $("#sr_list_info").dataTable().fnDraw(false);
                                         success_info.close().remove();
                                     }, 1000);
-                                    _table.ajax.reload();
                                 } else {
                                     var err_msg = dialog({
                                         content: '添加失败，请检查小区是否已经存在！'
                                     });
                                     err_msg.show();
+                                    dialog.get('result_info').close();
                                     setTimeout(function () {
-                                        dialog.get('result_info').close();
                                         err_msg.close().remove();
                                     }, 1500);
                                     return false;
@@ -184,4 +184,4 @@
         });
     </script>
 
-<?php require_once('common/footer.php');?>
+<?php require_once('common/footer.php'); ?>

@@ -18,9 +18,9 @@ class Login extends CI_Controller{
         $this->load->view('login');
     }
 
-    //登录
+    //登录过程
     public function check_login(){
-        
+
         $user_name = $this->input->post('user', TRUE);
         $pwd = $this->input->post('pwd', TRUE);
 
@@ -30,34 +30,32 @@ class Login extends CI_Controller{
         );
 
         //无网络时采用的连接方法
-        $this->session->set_userdata('admin_info', 'gy1667'); //记录用户名，用于判断是否登录
-        $this->session->set_userdata('name','赵昱');
-        $this->admin_model->add_log($this->input->ip_address(), 'gy1667 赵昱', '用户登录'); //记录登录日志
-//            redirect(site_url('manager'));
-        die("<script>window.location.href='" . site_url('manager') . "';</script>");
+//        $this->session->set_userdata('admin_info', 'gy1667'); //记录用户名，用于判断是否登录
+//        $this->session->set_userdata('name','赵昱');
+//        $this->admin_model->add_log($this->input->ip_address(), 'gy1667 赵昱', '用户登录'); //记录登录日志
+////            redirect(site_url('manager'));
+//        die("<script>window.location.href='" . site_url('manager') . "';</script>");
 
 
-        $result_info = json_decode($this->common_class->curl_request("http://58.16.134.2:8088/mobile/rest/businessservice/login",$data));
+        $result_info = json_decode($this->common_class->curl_request($this->config->config['login_path'], $data));
 
         if ($result_info->retCode === '0') {
             $this->session->set_userdata('admin_info', $result_info->wcode); //记录用户名，用于判断是否登录
-            $this->session->set_userdata('name',$result_info->name);
+            $this->session->set_userdata('name', $result_info->name);
             $this->admin_model->add_log($this->input->ip_address(), $result_info->wcode . '  ' . $result_info->name, '用户登录'); //记录登录日志
-//            redirect(site_url('manager'));
-            die("<script>window.location.href='" . site_url('manager') . "';</script>");
-        }else{
+
+            //此处判断用户是否为管理员
+            $result = $this->admin_model->check_login($user_name);
+            if ($result > 0) {
+                $_SESSION['is_manager'] = TRUE;
+                die("<script>window.location.href='" . site_url('manager') . "';</script>");
+            } else {
+                $_SESSION['is_manager'] = FALSE;
+                die("<script>window.location.href='" . site_url('manager/device_list') . "';</script>");
+            }
+        } else {
             echo "fail";
         }
-
-//        $result = $this->admin_model->check_login($user_name, md5($pwd));
-//        if ($result > 0) {
-//            $this->session->set_userdata('admin_info', $user_name); //记录用户名，用于判断是否登录
-//            $this->admin_model->add_log($this->input->ip_address(), $user_name,'用户登录'); //记录登录日志
-////            redirect(site_url('manager'));
-//            die("<script>window.location.href='" . site_url('manager') . "';</script>");
-//        } else {
-//            echo "fail";
-//        }
     }
 
     //退出

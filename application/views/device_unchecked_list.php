@@ -21,7 +21,7 @@
 
                 <div class="panel-body">
                     <div class="col-sm-2">
-                        <button type="button" class="btn btn-primary" id="btn-checked"> 通过审核
+                        <button type="button" class="btn btn-primary" id="btn-checked"><i class="fa fa-check"></i> 通过审核
                         </button>
                     </div>
                 </div>
@@ -223,11 +223,11 @@
                                     content: '操作成功！'
                                 });
                                 success_info.show();
+                                dialog.get('result_info').close();
                                 setTimeout(function () {
-                                    dialog.get('result_info').close();
                                     success_info.close().remove();
                                     $("#checkAll").attr("checked", false);//取消全选checkbox
-                                    table.ajax.reload();
+                                    $("#device_unchecked_list").dataTable().fnDraw(false);
                                 }, 1000);
                             } else {
                                 dialog.get('result_info').close();

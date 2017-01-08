@@ -16,6 +16,7 @@ class Serverroom_info extends CI_Controller
     {
         parent::__construct();
         $this->admin_model->auth_check();
+        $this->admin_model->check_is_manager();
     }
 
     //分前端信息view加载

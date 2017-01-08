@@ -53,24 +53,18 @@
                                 ?>
                             </select>
                         </div>
-                        <!--                        <div class="form-group">-->
-                        <!--                        </div>-->
 
                         <div class="col-sm-2">
                             <br>
                             <input id="file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
-<!--                            <input class="input-text" type="hidden" id="file_flag" value="0"/>-->
-<!--                            <button id="upload" class="btn btn-primary" type="button"><i-->
-<!--                                    class="glyphicon glyphicon-upload"></i>上传设备文件-->
-<!--                            </button>-->
-                            <!--                            <input id="lefile" type="file" style="display:none">-->
-                            <!--                            <input type="text" class="form-control" id="dev_multi_data" disabled>-->
-                            <!--<!--                            <input id="photoCover" class="input-large" type="text" style="height:30px;">-->
-
-                            <!--                            <button class="btn" onclick="$('input[id=lefile]').click();" id="choose_file_btn">选择上传文件</button>-->
                         </div>
                     </div>
 
+                    <div class="panel-body">
+                        <div class="col-sm-2">
+                            <a href="resource/templates/局端批量添加模板.xlsx"><i class="glyphicon glyphicon-download-alt"></i> 下载批量添加模板</a>
+                        </div>
+                    </div>
 
                     <div class="panel-body">
                         <div class="col-sm-2">
@@ -95,57 +89,6 @@
 
     <script>
 
-        $("#upload").click(function () {
-
-        });
-
-        //        $("#choose_file_btn").click(function () {
-        //            var btnUpload = $("#choose_file_btn");
-        //            var file_name = $("#lefile").val();
-        //            $("#video_status").attr('value', file_name);
-        //            new AjaxUpload(btnUpload, {
-        //                action: '#',
-        //                name: 'lefile',
-        ////                        data: {
-        ////                            file_type: 0, //上传文件类型
-        ////                            up_type: 'emoji',
-        ////                            order_id: 0, //地址序号
-        ////                            up_act: 'add'
-        ////                        },
-        //                onSubmit: function(file, ext) {//ext file suffix
-        //
-        //                    if (!(ext && /^(mp4)$/.test(ext))) {
-        //                        alert('请上传MP4格式视频文件！');
-        //                        return false;
-        //                    }
-        //
-        ////                        warn.html('正在上传...');
-        //                    //loading事件
-        //                    dialog({
-        //                        id: 'file_upload',
-        //                        title: '添加中，请稍后...',
-        //                        width: 150,
-        //                        quickClose: true
-        //                    }).show();
-        //                },
-        //                onComplete: function(file, response) {
-        //                    dialog.get('file_upload').close();
-        //                    if (response != "error" && response != "") {
-        ////                        warn.html('上传成功！');
-        //                        $("#video_status").html(response);
-        //                        $("#video_status").attr('value', response);
-        //                    } else {
-        //                        alert('上传失败，请重新上传！');
-        //                    }
-        //
-        //                }
-        //            });
-        //        });
-
-        //        $('input[id=lefile]').change(function() {
-        //            $('#dev_multi_data').val($(this).val());
-        //        });
-
         $("#btn-multi-add").click(function () {
             var community_info = $("#community_info").val();
             var sr_info = $("#sr_info").val();
@@ -159,17 +102,7 @@
                 }, 1500);
                 return;
             }
-//            var file_flag = $("#file_flag").attr('value');
-//            if (file_flag == 0) {
-//                var d = dialog({
-//                    content: '请先上传设备文件！'
-//                });
-//                d.show();
-//                setTimeout(function () {
-//                    d.close().remove();
-//                }, 1500);
-//                return;
-//            }
+
 
             //uploading both data and file in one form using Ajax
             //resolution: http://stackoverflow.com/questions/21060247/send-formdata-and-string-data-together-through-jquery-ajax
@@ -260,14 +193,14 @@
                 '局端安装地址：<input type="text" class="form-control" id="device_positional_info" placeholder="请输入局端安装地址">' +
                 '局端MAC：<input type="text" class="form-control" id="device_mac" placeholder="局端MAC（可不填）">' +
                 '小区选择：' +
-                '<select class="form-control input-sm" id="community_info"><option value="all">请选择所属小区</option>' +
+                '<select class="form-control input-sm" id="community_id"><option value="all">请选择所属小区</option>' +
                 '<?php
                     foreach ($community_info as $item) {
                         echo "<option value=" . $item['id'] . ">" . $item['community_name'] . "</option>";
                     }
                     ?>' +
                 '</select>' +
-                '分前端选择<select class="form-control input-sm" id="sr_info"><option value="all">请选择所属分前端</option>' +
+                '分前端选择<select class="form-control input-sm" id="sr_id"><option value="all">请选择所属分前端</option>' +
                 '<?php
                     foreach ($sr_info as $item) {
                         echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
@@ -288,8 +221,8 @@
                         return false;
                     }
                     var _device_positional_info = $.trim($('#device_positional_info').val());
-                    var _community_info = $('#community_info').val();
-                    var _sr_info = $('#sr_info').val();
+                    var _community_info = $('#community_id').val();
+                    var _sr_info = $('#sr_id').val();
                     var _device_mac = $.trim($('#device_mac').val());
                     if (_device_ip_addr.length == 0 || _device_positional_info.length == 0 || _community_info == 'all' || _sr_info == 'all') {
                         var info = dialog({

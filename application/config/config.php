@@ -521,3 +521,4 @@ $config['proxy_ips'] = '';
 $config['sys_version'] = 'v 1.0';
 $config['sys_name'] = '局端信息管理系统';
 $config['upload_path'] = 'application/upload_files/';
+$config['login_path'] = 'http://58.16.134.2:8088/mobile/rest/businessservice/login';//手持终端登录地址
