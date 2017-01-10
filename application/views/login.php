@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <title><?php echo $this->config->config['sys_name'];?></title>
+    <title><?php echo $this->config->config['sys_name']; ?></title>
     <base href="<?php echo base_url() ?>">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="shortcut icon" href="resource/images/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="resource/images/favicon.ico" type="image/x-icon"/>
 
     <!-- Jquery -->
     <script src="resource/js/jquery-1.10.2.min.js"></script>
@@ -28,7 +28,7 @@
     <script src="resource/artDialog/dist/dialog-min.js"></script>
 
     <style>
-        body{
+        body {
             background: url("resource/images/login-bg.jpg") center;
         }
     </style>
@@ -42,14 +42,17 @@
         <div class="col-md-4 col-md-offset-4">
             <div class="login-panel panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title" style="text-align: center"><?php echo $this->config->config['sys_name'];?></h3>
+                    <h3 class="panel-title"
+                        style="text-align: center"><?php echo $this->config->config['sys_name']; ?></h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="user_name" name="user_name" placeholder="工&nbsp;号" autofocus>
+                        <input type="text" class="form-control" id="user_name" name="user_name" placeholder="工&nbsp;号"
+                               autofocus>
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" id="password" name="password" placeholder="密&nbsp;码">
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="密&nbsp;码">
                     </div>
                     <button class="btn btn-lg btn-primary btn-block" id="login_btn" type="button">登录</button>
                     <div id="info"></div>
@@ -95,6 +98,16 @@
                             $("#login_btn").html("登录");
                             $("#login_btn").attr('disabled', false);
                             return false;
+                        } else if (msg == 'not_range') {
+                            var d = dialog({
+                                content: 'oh sorry，本系统暂时支持观山湖分公司，其他分公司暂未开通哟O(∩_∩)O~'
+                            });
+                            d.show();
+                            setTimeout(function () {
+                                d.close().remove();
+                            }, 5000);
+                            $("#login_btn").html("登录");
+                            $("#login_btn").attr('disabled', false);
                         } else {
                             $("#info").html(msg);
                         }

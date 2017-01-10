@@ -36,33 +36,24 @@
                                 <option value="all">全部</option>
                                 <?php
                                 foreach ($community_info as $item) {
-                                    echo "<option value=" . $item['id'] . ">" . $item['community_name'] . "</option>";
+                                    echo "<option value=" . $item['id'] . "," . $item['sr_id'] . ">" . $item['community_name'] . "</option>";
                                 }
                                 ?>
                             </select>
 
-                        </div>
-                        <div class="col-sm-2">
-                            分前端选择
-                            <select class="form-control input-sm" id="sr_info">
-                                <option value="all">全部</option>
-                                <?php
-                                foreach ($sr_info as $item) {
-                                    echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
-                                }
-                                ?>
-                            </select>
                         </div>
 
                         <div class="col-sm-2">
                             <br>
-                            <input id="file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+                            <input id="file" type="file"
+                                   accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
                         </div>
                     </div>
 
                     <div class="panel-body">
                         <div class="col-sm-2">
-                            <a href="resource/templates/局端批量添加模板.xlsx"><i class="glyphicon glyphicon-download-alt"></i> 下载批量添加模板</a>
+                            <a href="resource/templates/局端批量添加模板.xlsx"><i class="glyphicon glyphicon-download-alt"></i>
+                                下载批量添加模板</a>
                         </div>
                     </div>
 
@@ -91,10 +82,10 @@
 
         $("#btn-multi-add").click(function () {
             var community_info = $("#community_info").val();
-            var sr_info = $("#sr_info").val();
-            if (community_info == 'all' || sr_info == 'all') {
+
+            if (community_info == 'all') {
                 var d = dialog({
-                    content: '请选择所属小区及分前端！'
+                    content: '请选择所属小区！'
                 });
                 d.show();
                 setTimeout(function () {
@@ -102,7 +93,9 @@
                 }, 1500);
                 return;
             }
-
+            var data_array = ($.trim(community_info)).split(',');//利用,来分割小区ID和分前端ID
+            var community_info = data_array[0];
+            var sr_info = data_array[1];
 
             //uploading both data and file in one form using Ajax
             //resolution: http://stackoverflow.com/questions/21060247/send-formdata-and-string-data-together-through-jquery-ajax
@@ -161,7 +154,7 @@
                     $("#btn-multi-add").html("添加成功");
                     $("#btn-multi-add").attr('disabled', true);
                     var info = dialog({
-                        content: '添加成功<br>添加成功局端数：'+res.success_num+'<br>添加失败局端数：'+res.fail_num
+                        content: '添加成功<br>添加成功局端数：' + res.success_num + '<br>添加失败局端数：' + res.fail_num
                     });
                     info.show();
                     setTimeout(function () {
@@ -196,17 +189,11 @@
                 '<select class="form-control input-sm" id="community_id"><option value="all">请选择所属小区</option>' +
                 '<?php
                     foreach ($community_info as $item) {
-                        echo "<option value=" . $item['id'] . ">" . $item['community_name'] . "</option>";
+                        echo "<option value=" . $item['id'] . "," . $item['sr_id'] . ">" . $item['community_name'] . "</option>";
                     }
                     ?>' +
                 '</select>' +
-                '分前端选择<select class="form-control input-sm" id="sr_id"><option value="all">请选择所属分前端</option>' +
-                '<?php
-                    foreach ($sr_info as $item) {
-                        echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
-                    }
-                    ?>' +
-                '</select>',
+                '',
                 okValue: '添加',
                 ok: function () {
                     var _device_ip_addr = $.trim($('#device_ip_addr').val());
@@ -220,11 +207,22 @@
                         }, 1500);
                         return false;
                     }
+                    if ($('#community_id').val() == 'all') {
+                        var info = dialog({
+                            content: '请选择所属小区！'
+                        });
+                        info.show();
+                        setTimeout(function () {
+                            info.close().remove();
+                        }, 1500);
+                        return false;
+                    }
                     var _device_positional_info = $.trim($('#device_positional_info').val());
-                    var _community_info = $('#community_id').val();
-                    var _sr_info = $('#sr_id').val();
+                    var data_array = ($.trim($('#community_id').val())).split(',');//利用,来分割小区ID和分前端ID
+                    var _community_info = data_array[0];
+                    var _sr_info = data_array[1];
                     var _device_mac = $.trim($('#device_mac').val());
-                    if (_device_ip_addr.length == 0 || _device_positional_info.length == 0 || _community_info == 'all' || _sr_info == 'all') {
+                    if (_device_ip_addr.length == 0 || _device_positional_info.length == 0) {
                         var info = dialog({
                             content: '请完善局端信息必填内容！'
                         });

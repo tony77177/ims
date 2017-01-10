@@ -40,6 +40,11 @@ class Login extends CI_Controller{
         $result_info = json_decode($this->common_class->curl_request($this->config->config['login_path'], $data));
 
         if ($result_info->retCode === '0') {
+
+            //判断是否为 “观山湖建设运维部”，部门ID为29，如果不是则暂时不让其登录
+            if ($result_info->depId != '29') {
+                die('not_range');
+            }
             $this->session->set_userdata('admin_info', $result_info->wcode); //记录用户名，用于判断是否登录
             $this->session->set_userdata('name', $result_info->name);
             $this->admin_model->add_log($this->input->ip_address(), $result_info->wcode . '  ' . $result_info->name, '用户登录'); //记录登录日志

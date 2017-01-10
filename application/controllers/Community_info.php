@@ -21,7 +21,10 @@ class Community_info extends CI_Controller
     //小区信息view加载
     public function index()
     {
-        $this->load->view('community_info');
+        //分前端信息获取
+        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        $this->load->view('community_info', $data);
     }
 
     //小区信息获取，返回JSON格式数据
@@ -96,7 +99,8 @@ class Community_info extends CI_Controller
     {
         //暂时只过滤XSS情况，后续再增加防止SQL过滤等函数过滤
         $community_name = trim($this->input->post('_community_name', TRUE));
-        $add_sql = "INSERT INTO t_community(community_name,update_time) VALUES ('" . $community_name . "','" . date("Y-m-d H:i:s") . "')";
+        $sr_id = trim($this->input->post('_sr_id', TRUE));
+        $add_sql = "INSERT INTO t_community(community_name,sr_id,update_time) VALUES ('" . $community_name . "','" . $sr_id . "','" . date("Y-m-d H:i:s") . "')";
         $result = $this->common_model->execQuery($add_sql, 'default');
         echo json_encode(array(
             "result" => $result

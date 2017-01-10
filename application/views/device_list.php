@@ -163,14 +163,7 @@
                 '<select class="form-control input-sm" id="community_id"><option value="all">请选择所属小区</option>' +
                 '<?php
                     foreach ($community_info as $item) {
-                        echo "<option value=" . $item['id'] . ">" . $item['community_name'] . "</option>";
-                    }
-                    ?>' +
-                '</select>' +
-                '分前端选择<select class="form-control input-sm" id="sr_id"><option value="all">请选择所属分前端</option>' +
-                '<?php
-                    foreach ($sr_info as $item) {
-                        echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
+                        echo "<option value=" . $item['id'] . "," . $item['sr_id'] . ">" . $item['community_name'] . "</option>";
                     }
                     ?>' +
                 '</select>',
@@ -187,16 +180,25 @@
                         }, 1500);
                         return false;
                     }
-                    var _device_positional_info = $.trim($('#device_positional_info').val());
-                    var _community_info = $('#community_id').val();
-                    var _sr_info = $('#sr_id').val();
-                    var _device_mac = $.trim($('#device_mac').val());
-//                    console.log(_device_ip_addr);
-//                    console.log(_device_positional_info);
-//                    console.log(_community_info);
-//                    console.log(_sr_info);
 
-                    if (_device_ip_addr.length == 0 || _device_positional_info.length == 0 || _community_info == 'all' || _sr_info == 'all') {
+                    if ($('#community_id').val() == 'all') {
+                        var info = dialog({
+                            content: '请选择所属小区！'
+                        });
+                        info.show();
+                        setTimeout(function () {
+                            info.close().remove();
+                        }, 1500);
+                        return false;
+                    }
+
+                    var _device_positional_info = $.trim($('#device_positional_info').val());
+                    var data_array = ($.trim($('#community_id').val())).split(',');//利用,来分割小区ID和分前端ID
+                    var _community_info = data_array[0];
+                    var _sr_info = data_array[1];
+                    var _device_mac = $.trim($('#device_mac').val());
+
+                    if (_device_ip_addr.length == 0 || _device_positional_info.length == 0) {
                         var info = dialog({
                             content: '请完善局端信息必填内容！'
                         });

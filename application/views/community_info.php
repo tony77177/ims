@@ -64,7 +64,7 @@
     <script type="text/javascript" src="resource/DataTables/media/js/dataTables.responsive.min.js"></script>
 
 
-    <script>
+    <script type="text/javascript">
 
         $(document).ready(function () {
             var _table = $("#sr_list_info").DataTable({
@@ -114,13 +114,21 @@
             var d = dialog({
                 title: '添加小区',
 //            quickClose: true,
-                content: '小区名称：<input type="text" class="form-control" id="community_name" placeholder="请输入小区名称" autofocus>',
+                content: '小区名称：<input type="text" class="form-control" id="community_name" placeholder="请输入小区名称" autofocus>'+
+                '分前端选择<select class="form-control input-sm" id="sr_id"><option value="all">请选择所属分前端</option>' +
+                '<?php
+                    foreach ($sr_info as $item) {
+                        echo "<option value=" . $item['id'] . ">" . $item['sr_name'] . "</option>";
+                    }
+                    ?>' +
+                '</select>',
                 okValue: '添加',
                 ok: function () {
                     var _community_name = $.trim($('#community_name').val());
-                    if (_community_name.length == 0) {
+                    var _sr_id = $('#sr_id').val();
+                    if (_community_name.length == 0 || _sr_id == 'all') {
                         var info = dialog({
-                            content: '小区名称不能为空！'
+                            content: '请完成小区名称及所属分前端信息！'
                         });
                         info.show();
                         setTimeout(function () {
@@ -138,7 +146,7 @@
                         $.ajax({
                             url: "<?php echo site_url('community_info/add_community_info') ?>",
                             type: "POST",
-                            data: {_community_name: _community_name},
+                            data: {_community_name: _community_name, _sr_id: _sr_id},
                             dataType: "json",
                             success: function (msg) {
                                 if (msg.result) {

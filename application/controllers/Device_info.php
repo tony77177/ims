@@ -27,12 +27,12 @@ class Device_info extends CI_Controller
     public function device_add_view()
     {
         //小区信息获取
-        $get_community_info_sql = "SELECT id,community_name FROM t_community";
+        $get_community_info_sql = "SELECT * FROM t_community";
         $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
 
         //分前端信息获取
-        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+//        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+//        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
 
         $this->load->view('device_add', $data);
     }
@@ -192,9 +192,9 @@ class Device_info extends CI_Controller
                 $data = $this->common_model->getDataList($get_dev_info_by_id, 'default');
                 $data = $data[0];
                 if ($i + 1 == count($dev_id_arrary)) {
-                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "'),'" . date("Y-m-d H:i:s") . "')";
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
                 } else {
-                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "'),'" . date("Y-m-d H:i:s") . "'),";
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'),";
                 }
             }
 

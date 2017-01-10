@@ -97,7 +97,8 @@ class Serverroom_info extends CI_Controller
     {
         //暂时只过滤XSS情况，后续再增加防止SQL过滤等函数过滤
         $sr_name = trim($this->input->post('_sr_name', TRUE));
-        $add_sql = "INSERT INTO t_serverroom(sr_name,update_time) VALUES ('" . $sr_name . "','" . date("Y-m-d H:i:s") . "')";
+        $branch_id = '1001';//分公司ID，目前暂时只支持观山湖，故此处直接增加为观山湖公司ID
+        $add_sql = "INSERT INTO t_serverroom(sr_name,branch_id,update_time) VALUES ('" . $sr_name . "','" . $branch_id . "','" . date("Y-m-d H:i:s") . "')";
         $result = $this->common_model->execQuery($add_sql, 'default');
         echo json_encode(array(
             "result" => $result
