@@ -71,6 +71,10 @@ class Manager extends CI_Controller{
         $get_community_info_sql = "SELECT * FROM t_community";
         $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
 
+        //分前端信息获取
+        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+
         $this->load->view('device_list', $data);
     }
 
