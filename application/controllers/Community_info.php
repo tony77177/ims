@@ -22,8 +22,11 @@ class Community_info extends CI_Controller
     public function index()
     {
         //分前端信息获取
-        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        if (!isset($_SESSION['sr_info'])) {
+            $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+            $_SESSION['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        }
+        $data['sr_info'] = $_SESSION['sr_info'];
         $this->load->view('community_info', $data);
     }
 
@@ -102,6 +105,10 @@ class Community_info extends CI_Controller
         $sr_id = trim($this->input->post('_sr_id', TRUE));
         $add_sql = "INSERT INTO t_community(community_name,sr_id,update_time) VALUES ('" . $community_name . "','" . $sr_id . "','" . date("Y-m-d H:i:s") . "')";
         $result = $this->common_model->execQuery($add_sql, 'default');
+        //添加成功，则删除已存在session，从DB获取最新数据
+        if ($result) {
+            unset($_SESSION['community_info']);
+        }
         echo json_encode(array(
             "result" => $result
         ), JSON_UNESCAPED_UNICODE);

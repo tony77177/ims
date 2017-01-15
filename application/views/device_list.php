@@ -60,6 +60,8 @@
                             <tr>
                                 <th>局端安装地址</th>
                                 <th>局端IP地址</th>
+<!--                                <th width="15%">局端MAC地址</th>-->
+<!--                                <th width="15%">ONU SN号</th>-->
                                 <th>更新时间</th>
                             </tr>
                             </thead>
@@ -115,6 +117,8 @@
 //                {'title': "序号", 'data': "id"},
                 {'data': "positional_info"},
                 {'data': "ip_addr"},
+//                {'data': "dev_mac"},
+//                {'data': "onu_sn"},
                 {'data': "update_time"},
             ],
             "language": { // 定义语言
@@ -159,6 +163,7 @@
                 content: '局端IP：<input type="text" class="form-control" id="device_ip_addr" placeholder="请输入局端IP">' +
                 '局端安装地址：<input type="text" class="form-control" id="device_positional_info" placeholder="请输入局端安装地址">' +
                 '局端MAC：<input type="text" class="form-control" id="device_mac" placeholder="局端MAC（可不填）">' +
+                'ONU SN码：<input type="text" class="form-control" id="onu_sn" placeholder="ONU SN码（可不填）">' +
                 '小区选择：' +
                 '<select class="form-control input-sm" id="community_id"><option value="all">请选择所属小区</option>' +
                 '<?php
@@ -197,6 +202,7 @@
                     var _community_info = data_array[0];
                     var _sr_info = data_array[1];
                     var _device_mac = $.trim($('#device_mac').val());
+                    var _onu_sn = $.trim($("#onu_sn").val());
 
                     if (_device_ip_addr.length == 0 || _device_positional_info.length == 0) {
                         var info = dialog({
@@ -223,7 +229,8 @@
                                 _device_positional_info: _device_positional_info,
                                 _community_info: _community_info,
                                 _sr_info: _sr_info,
-                                _device_mac: _device_mac
+                                _device_mac: _device_mac,
+                                _onu_sn: _onu_sn
                             },
                             dataType: "json",
                             success: function (msg) {

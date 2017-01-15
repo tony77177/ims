@@ -38,11 +38,11 @@
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-xs-3">
-                            <i class="fa fa-tasks fa-5x"></i>
+                            <i class="fa  fa-archive  fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge"><?php echo $branches_total_num; ?></div>
-                            <div>分公司个数</div>
+                            <div class="huge"><?php echo $community_total_num; ?></div>
+                            <div>小区个数</div>
                         </div>
                     </div>
                 </div>
@@ -85,8 +85,8 @@
                             <i class="fa fa-institution fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge"><?php echo $community_total_num; ?></div>
-                            <div>小区个数</div>
+                            <div class="huge"><?php echo $branches_total_num; ?></div>
+                            <div>分公司个数</div>
                         </div>
                     </div>
                 </div>
@@ -103,31 +103,30 @@
     <!-- /.row -->
 
     <div class="row">
-<!--        <div class="col-lg-6 col-md-6">-->
-<!--            <div class="panel panel-default">-->
-<!--                <div class="panel-heading">-->
-<!--                    <i class="fa fa-bar-chart-o fa-fw"></i> 局端柱形图-->
-<!--                </div>-->
-<!--                <div class="panel-body">-->
-<!--                    <div id="dev_all_statistic" style="width: auto;height:300px;">-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!---->
-<!--        </div>-->
+        <div class="col-lg-6 col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> 分前端设备占比统计
+                </div>
+                <div class="panel-body">
+                    <div id="dev_statistic_orderby_sr" style="width: auto;height:300px;">
+                    </div>
+                </div>
+            </div>
 
-<!--        <div class="col-lg-6 col-md-6">-->
-<!--            <div class="panel panel-default">-->
-<!--                <div class="panel-heading">-->
-<!--                    <i class="fa fa-bar-chart-o fa-fw"></i> 小区局端分布图-->
-<!--                </div>-->
-<!--                <div class="panel-body">-->
-<!--                    <div id="dev_commuity_statistic" style="width: auto;height:300px;">-->
-<!--                        22-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> 小区设备占比统计
+                </div>
+                <div class="panel-body">
+                    <div id="dev_statistic_orderby_com" style="width: auto;height:300px;">
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     </div>
@@ -140,52 +139,104 @@
 
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
-//    var dev_commuity_statistic = echarts.init(document.getElementById('dev_commuity_statistic'));
-//
-//    // 指定图表的配置项和数据
-//    option = {
-//        title: {
-//            text: '某站点用户访问来源',
-//            subtext: '纯属虚构',
-//            x: 'center'
-//        },
-//        tooltip: {
-//            trigger: 'item',
-//            formatter: "{a} <br/>{b} : {c} ({d}%)"
-//        },
+    var dev_statistic_orderby_sr = echarts.init(document.getElementById('dev_statistic_orderby_sr'));
+
+    // 指定图表的配置项和数据
+    option = {
+        title: {
+            text: '分前端设备统计',
+//            subtext: '',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a}： <br/>{b} : {c}台 ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data:
+                [<?php foreach ($dev_statistic_sr_info as $item){
+                    echo "'".$item['name']."',";
+                } ?>]
+        },
+        series: [
+            {
+                name: '设备来源',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: [
+                    <?php
+                    foreach ($dev_statistic_sr_info as $item){
+                        echo "{value:".$item['value'].",name:'".$item['name']."'},";
+                    }
+                    ?>
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    dev_statistic_orderby_sr.setOption(option);
+
+
+    var dev_statistic_orderby_com = echarts.init(document.getElementById('dev_statistic_orderby_com'));
+
+    // 指定图表的配置项和数据
+    option = {
+        title: {
+            text: '小区设备统计',
+//            subtext: '',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a}： <br/>{b} : {c}台 ({d}%)"
+        },
 //        legend: {
 //            orient: 'vertical',
 //            left: 'left',
-//            data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+//            data:
+//                [<?php //foreach ($dev_statistic_com_info as $item){
+//                    echo "'".$item['name']."',";
+//                } ?>//]
 //        },
-//        series: [
-//            {
-//                name: '访问来源',
-//                type: 'pie',
-//                radius: '55%',
-//                center: ['50%', '60%'],
-//                data: [
-//                    {value: 335, name: '直接访问'},
-//                    {value: 310, name: '邮件营销'},
-//                    {value: 234, name: '联盟广告'},
-//                    {value: 135, name: '视频广告'},
-//                    {value: 1548, name: '搜索引擎'}
-//                ],
-//                itemStyle: {
-//                    emphasis: {
-//                        shadowBlur: 10,
-//                        shadowOffsetX: 0,
-//                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-//                    }
-//                }
-//            }
-//        ]
-//    };
-//
-//    // 使用刚指定的配置项和数据显示图表。
-//    dev_commuity_statistic.setOption(option);
-//
-//
+        series: [
+            {
+                name: '设备来源',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '50%'],
+                data: [
+                    <?php
+                    foreach ($dev_statistic_com_info as $item){
+                        echo "{value:".$item['value'].",name:'".$item['name']."'},";
+                    }
+                    ?>
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    dev_statistic_orderby_com.setOption(option);
+
+
 //    var dev_all_statistic = echarts.init(document.getElementById('dev_all_statistic'));
 //
 //    option = {

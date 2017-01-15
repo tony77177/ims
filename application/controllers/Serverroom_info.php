@@ -100,6 +100,10 @@ class Serverroom_info extends CI_Controller
         $branch_id = '1001';//分公司ID，目前暂时只支持观山湖，故此处直接增加为观山湖公司ID
         $add_sql = "INSERT INTO t_serverroom(sr_name,branch_id,update_time) VALUES ('" . $sr_name . "','" . $branch_id . "','" . date("Y-m-d H:i:s") . "')";
         $result = $this->common_model->execQuery($add_sql, 'default');
+        //添加成功，则删除已存在session，从DB获取最新数据
+        if ($result) {
+            unset($_SESSION['sr_info']);
+        }
         echo json_encode(array(
             "result" => $result
         ), JSON_UNESCAPED_UNICODE);

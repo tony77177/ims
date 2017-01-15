@@ -47,12 +47,12 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="user_name" name="user_name" placeholder="工&nbsp;号"
+                        <input type="text" class="form-control" id="user_name" name="user_name" placeholder="请输入手持终端工号"
                                autofocus>
                     </div>
                     <div class="form-group">
                         <input type="password" class="form-control" id="password" name="password"
-                               placeholder="密&nbsp;码">
+                               placeholder="请输入手持终端密码">
                     </div>
                     <button class="btn btn-lg btn-primary btn-block" id="login_btn" type="button">登录</button>
                     <div id="info"></div>

@@ -27,12 +27,11 @@ class Device_info extends CI_Controller
     public function device_add_view()
     {
         //小区信息获取
-        $get_community_info_sql = "SELECT * FROM t_community";
-        $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
-
-        //分前端信息获取
-//        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-//        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        if (!isset($_SESSION['community_info'])) {
+            $get_community_info_sql = "SELECT * FROM t_community";
+            $_SESSION['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        }
+        $data['community_info'] = $_SESSION['community_info'];
 
         $this->load->view('device_add', $data);
     }
@@ -46,6 +45,7 @@ class Device_info extends CI_Controller
         $_community_info = $this->input->post('_community_info', TRUE);//小区ID
         $_sr_info = $this->input->post('_sr_info', TRUE);//分前端ID
         $_device_mac = $this->input->post('_device_mac', TRUE);//局端MAC，可为空
+        $_onu_sn = $this->input->post('_onu_sn',TRUE);//ONU SN码，可为空
 
         //检测局端是否存在
         $check_dev_is_exist_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE ip_addr='" . $_device_ip_addr . "'";
@@ -56,8 +56,8 @@ class Device_info extends CI_Controller
             ), JSON_UNESCAPED_UNICODE);
         } else {
             //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
-            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_time,update_time) VALUES ";
-            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
+            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,onu_sn,add_time,update_time) VALUES ";
+            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . $_onu_sn . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
             $result = $this->common_model->execQuery($add_sql, 'default');
 
             //如果添加成功，则记录log
@@ -75,12 +75,18 @@ class Device_info extends CI_Controller
     public function dev_unchecked_view()
     {
         //小区信息获取
-        $get_community_info_sql = "SELECT id,community_name FROM t_community";
-        $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        if (!isset($_SESSION['community_info'])) {
+            $get_community_info_sql = "SELECT * FROM t_community";
+            $_SESSION['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        }
+        $data['community_info'] = $_SESSION['community_info'];
 
         //分前端信息获取
-        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        if (!isset($_SESSION['sr_info'])) {
+            $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+            $_SESSION['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        }
+        $data['sr_info'] = $_SESSION['sr_info'];
 
         $this->load->view('device_unchecked_list', $data);
     }
@@ -183,7 +189,7 @@ class Device_info extends CI_Controller
             //准备添加数据到t_device正式表
             log_message('info','开始执行批量审核机制');
 
-            $insert_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_time,update_time)";
+            $insert_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,onu_sn,add_time,update_time)";
             $insert_sql .= " VALUES ";
 
             //此处采用获取ID之后再读取数据库的方法，暂时不采用前台传数据方法，为了防止数据不被篡改
@@ -192,9 +198,9 @@ class Device_info extends CI_Controller
                 $data = $this->common_model->getDataList($get_dev_info_by_id, 'default');
                 $data = $data[0];
                 if ($i + 1 == count($dev_id_arrary)) {
-                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','".$data['onu_sn']."','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
                 } else {
-                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'),";
+                    $insert_sql .= "('" . $data['ip_addr'] . "','" . $data['positional_info'] . "','" . $data['branch_id'] . "','" . $data['serverroom_id'] . "','" . $data['community_id'] . "','" . $data['dev_mac'] . "','".$data['onu_sn']."','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'),";
                 }
             }
 
@@ -213,12 +219,18 @@ class Device_info extends CI_Controller
     public function dev_checked_view()
     {
         //小区信息获取
-        $get_community_info_sql = "SELECT id,community_name FROM t_community";
-        $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        if (!isset($_SESSION['community_info'])) {
+            $get_community_info_sql = "SELECT * FROM t_community";
+            $_SESSION['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        }
+        $data['community_info'] = $_SESSION['community_info'];
 
         //分前端信息获取
-        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        if (!isset($_SESSION['sr_info'])) {
+            $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+            $_SESSION['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        }
+        $data['sr_info'] = $_SESSION['sr_info'];
 
         $this->load->view('device_checked_list', $data);
     }
@@ -378,8 +390,8 @@ class Device_info extends CI_Controller
                         $check_result = $this->common_model->getTotalNum($check_dev_is_exist_sql, 'default');
                         if ($check_result == 0) {
                             //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
-                            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_time,update_time) VALUES ";
-                            $add_sql .= "('" . $item['A'] . "','" . $item['B'] . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $item['C'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
+                            $add_sql = "INSERT INTO t_deviceinfo(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,onu_sn,add_time,update_time) VALUES ";
+                            $add_sql .= "('" . $item['A'] . "','" . $item['B'] . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $item['C'] . "','" . $item['D'] . "','" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "')";
                             $result = $this->common_model->execQuery($add_sql, 'default');
 
                             //如果添加成功，则记录log
@@ -427,12 +439,18 @@ class Device_info extends CI_Controller
     public function dev_edit_view()
     {
         //小区信息获取
-        $get_community_info_sql = "SELECT id,community_name FROM t_community";
-        $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        if (!isset($_SESSION['community_info'])) {
+            $get_community_info_sql = "SELECT * FROM t_community";
+            $_SESSION['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        }
+        $data['community_info'] = $_SESSION['community_info'];
 
         //分前端信息获取
-        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        if (!isset($_SESSION['sr_info'])) {
+            $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+            $_SESSION['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        }
+        $data['sr_info'] = $_SESSION['sr_info'];
 
         $this->load->view('device_edit', $data);
     }

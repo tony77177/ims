@@ -52,7 +52,7 @@
 
                     <div class="panel-body">
                         <div class="col-sm-2">
-                            <a href="resource/templates/局端批量添加模板.xlsx"><i class="glyphicon glyphicon-download-alt"></i>
+                            <a href="resource/templates/template.xlsx"><i class="glyphicon glyphicon-download-alt"></i>
                                 下载批量添加模板</a>
                         </div>
                     </div>
@@ -185,6 +185,7 @@
                 content: '局端IP：<input type="text" class="form-control" id="device_ip_addr" placeholder="请输入局端IP" autofocus>' +
                 '局端安装地址：<input type="text" class="form-control" id="device_positional_info" placeholder="请输入局端安装地址">' +
                 '局端MAC：<input type="text" class="form-control" id="device_mac" placeholder="局端MAC（可不填）">' +
+                'ONU SN码：<input type="text" class="form-control" id="onu_sn" placeholder="ONU SN码（可不填）">' +
                 '小区选择：' +
                 '<select class="form-control input-sm" id="community_id"><option value="all">请选择所属小区</option>' +
                 '<?php
@@ -217,11 +218,14 @@
                         }, 1500);
                         return false;
                     }
+
                     var _device_positional_info = $.trim($('#device_positional_info').val());
                     var data_array = ($.trim($('#community_id').val())).split(',');//利用,来分割小区ID和分前端ID
                     var _community_info = data_array[0];
                     var _sr_info = data_array[1];
                     var _device_mac = $.trim($('#device_mac').val());
+                    var _onu_sn = $.trim($("#onu_sn").val());
+
                     if (_device_ip_addr.length == 0 || _device_positional_info.length == 0) {
                         var info = dialog({
                             content: '请完善局端信息必填内容！'
@@ -247,7 +251,8 @@
                                 _device_positional_info: _device_positional_info,
                                 _community_info: _community_info,
                                 _sr_info: _sr_info,
-                                _device_mac: _device_mac
+                                _device_mac: _device_mac,
+                                _onu_sn: _onu_sn
                             },
                             dataType: "json",
                             success: function (msg) {

@@ -16,7 +16,11 @@ class Manager extends CI_Controller{
         $this->admin_model->auth_check();
     }
 
-    //首页加载
+    /**
+     * 首页信息加载
+     *  注：本页面所有处理逻辑，均为在DB统计相关信息后存入session，待下次使用时先判断session是否存在
+     *  若存在则直接使用，否则进行数据库读取
+     */
     public function index()
     {
         //获取设备总数
@@ -54,26 +58,71 @@ class Manager extends CI_Controller{
         $community_total_num = $_SESSION['community_total_num'];
 
 
+        //分前端局端数量分布统计操作
+        if (!isset($_SESSION['sr_info'])) {
+            $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+            $_SESSION['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        }
+        $dev_statistic_sr_info = array();
+        if (!isset($_SESSION['dev_statistic_sr_info'])) {
+            for ($i = 0; $i < count($_SESSION['sr_info']); $i++) {
+                $get_dev_num_by_srid_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE serverroom_id='" . $_SESSION['sr_info'][$i]['id'] . "'";
+                $_SESSION['dev_statistic_sr_info'][$i]['value'] = $this->common_model->getTotalNum($get_dev_num_by_srid_sql, 'default');
+                $_SESSION['dev_statistic_sr_info'][$i]['name'] = $_SESSION['sr_info'][$i]['sr_name'];
+            }
+        }
+        $dev_statistic_sr_info = $_SESSION['dev_statistic_sr_info'];
+
+        //小区局端数量分布统计操作
+        //小区信息获取
+        if (!isset($_SESSION['community_info'])) {
+            $get_community_info_sql = "SELECT * FROM t_community";
+            $_SESSION['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        }
+        $dev_statistic_com_info = array();
+        if (!isset($_SESSION['dev_statistic_com_info'])) {
+            for ($i = 0; $i < count($_SESSION['community_info']); $i++) {
+                $get_dev_num_by_comid_sql = "SELECT COUNT(*) AS num FROM t_deviceinfo WHERE community_id='" . $_SESSION['community_info'][$i]['id'] . "'";
+                $_SESSION['dev_statistic_com_info'][$i]['value'] = $this->common_model->getTotalNum($get_dev_num_by_comid_sql, 'default');
+                $_SESSION['dev_statistic_com_info'][$i]['name'] = $_SESSION['community_info'][$i]['community_name'];
+            }
+        }
+        $dev_statistic_com_info = $_SESSION['dev_statistic_com_info'];
+
+
         //加载首页数量
         $data = array(
             "dev_total_num" => $dev_total_num,
             "branches_total_num" => $branches_total_num,
             "sr_total_num" => $sr_total_num,
-            "community_total_num" => $community_total_num
+            "community_total_num" => $community_total_num,
+            "dev_statistic_sr_info" => $dev_statistic_sr_info,
+            "dev_statistic_com_info" => $dev_statistic_com_info
         );
         $this->load->view('index', $data);
     }
 
-    //局列表首页
+    /**
+     * 局列表首页
+     * 逻辑更改，将小区列表信息及分前端信息从DB读出来之后存放在session，
+     * 避免每次使用均要频繁操作DB
+     * 注：在添加小区信息及分前端信息时，需要释放对应的session，使其重新获取最新DB数据
+     */
     public function device_list()
     {
         //小区信息获取
-        $get_community_info_sql = "SELECT * FROM t_community";
-        $data['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        if (!isset($_SESSION['community_info'])) {
+            $get_community_info_sql = "SELECT * FROM t_community";
+            $_SESSION['community_info'] = $this->common_model->getDataList($get_community_info_sql, 'default');
+        }
+        $data['community_info'] = $_SESSION['community_info'];
 
         //分前端信息获取
-        $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
-        $data['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        if (!isset($_SESSION['sr_info'])) {
+            $get_sr_info_sql = "SELECT id,sr_name FROM t_serverroom";
+            $_SESSION['sr_info'] = $this->common_model->getDataList($get_sr_info_sql, 'default');
+        }
+        $data['sr_info'] = $_SESSION['sr_info'];
 
         $this->load->view('device_list', $data);
     }
@@ -173,6 +222,7 @@ class Manager extends CI_Controller{
         $_community_info = $this->input->post('_community_info', TRUE);//小区ID
         $_sr_info = $this->input->post('_sr_info', TRUE);//分前端ID
         $_device_mac = $this->input->post('_device_mac', TRUE);//局端MAC，可为空
+        $_onu_sn = $this->input->post('_onu_sn',TRUE);//ONU SN码，可为空
 
 
         //检测局端是否存在
@@ -186,8 +236,8 @@ class Manager extends CI_Controller{
 
             log_message('info', '添加待审核局端：' . $_SESSION['admin_info'] . '  ' . $_SESSION['name'] . ',IP地址：' . $_device_ip_addr);
             //注：branch_id为分公司ID，由于暂时只供观山湖使用，所以此处直接填入观山湖公司ID：1001
-            $add_sql = "INSERT INTO t_unchecked_dev(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,add_user,add_time,flag) VALUES ";
-            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . $_SESSION['admin_info'] . '  ' . $_SESSION['name'] . "','" . date("Y-m-d H:i:s") . "','0')";
+            $add_sql = "INSERT INTO t_unchecked_dev(ip_addr,positional_info,branch_id,serverroom_id,community_id,dev_mac,onu_sn,add_user,add_time,flag) VALUES ";
+            $add_sql .= "('" . $_device_ip_addr . "','" . $_device_positional_info . "','1001','" . $_sr_info . "','" . $_community_info . "','" . $_device_mac . "','" . $_onu_sn . "','" . $_SESSION['admin_info'] . '  ' . $_SESSION['name'] . "','" . date("Y-m-d H:i:s") . "','0')";
             $result = $this->common_model->execQuery($add_sql, 'default');
             log_message('info', '添加待审核局端SQL：' . $add_sql);
             log_message('info', '添加待审核局端结果：' . $result);
